@@ -5,7 +5,7 @@
  * ╚═══════════════════════════════════════════════════════════════════════════╝
  *
  * [INPUT]: 依赖 SwiftUI View/Namespace、Color.cc 设计令牌、TimelineView 帧时钟
- * [OUTPUT]: 对外提供 CCGlassEffectContainer、SoftGlassShape + SoftGlassPath（可动画几何类型）+ parametricFamily（iOS 26 玻璃三族：capsule / rounded / freeform）、ccGlassEffect/softGlassStyle、appleCard/ccGroupCard、shimmer（TimelineView 相位取模，禁 repeatForever）
+ * [OUTPUT]: 对外提供 CCGlassEffectContainer（spacing 控制靠近后融合）、SoftGlassShape + SoftGlassPath（可动画几何类型）+ parametricFamily（iOS 26 玻璃三族：capsule / rounded / freeform）、ccGlassEffect/softGlassStyle（isEnabled 关时玻璃退成 identity；开着时 interactive 为真才是可按压的 regular，为假是不形变的 regular；materialize 为真才挂退场过渡）、appleCard/ccGroupCard、shimmer（TimelineView 相位取模，禁 repeatForever）
  * [POS]: DesignSystem/Theme 的系统效果兼容边界；iOS 26 装配 Liquid Glass，iOS 18.6–25 统一降级为微拟物材质，业务层不得直接调用 glassEffect；iOS 26 玻璃按 parametricFamily 三族传原生形状（系统按压高亮/形变只认参数化形状，自由 path 会让高亮回退成默认胶囊）——同一消费方禁跨族切换形状（跨族 = @ViewBuilder 换分支 = 宿主子树重建，UITextView 焦点丢失、键盘二次弹出的根因；同族内半径/胶囊插值不换身份）；降级层仍走 SoftGlassPath 单一类型；循环光效一律时钟取模，禁止把相位写进动画事务
  *
  * API:
@@ -130,18 +130,20 @@ public struct SoftGlassPath: Shape {
 // MARK: - Liquid Glass 容器兼容边界
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-/// 共享玻璃采样容器：iOS 26 使用系统 GlassEffectContainer，旧系统保留原布局。
+/// 共享玻璃采样容器：iOS 26 使用系统 GlassEffectContainer，spacing 是两块玻璃靠近后融合的距离；旧系统保留原布局。
 public struct CCGlassEffectContainer<Content: View>: View {
+    private let spacing: CGFloat
     private let content: () -> Content
 
-    public init(@ViewBuilder content: @escaping () -> Content) {
+    public init(spacing: CGFloat = 0, @ViewBuilder content: @escaping () -> Content) {
+        self.spacing = spacing
         self.content = content
     }
 
     @ViewBuilder
     public var body: some View {
         if #available(iOS 26, *) {
-            GlassEffectContainer {
+            GlassEffectContainer(spacing: spacing) {
                 content()
             }
         } else {
@@ -160,25 +162,40 @@ public extension View {
     public func ccGlassEffect(
         _ shape: SoftGlassShape = .circle,
         id: String? = nil,
-        in namespace: Namespace.ID? = nil
+        in namespace: Namespace.ID? = nil,
+        isEnabled: Bool = true,
+        materialize: Bool = false,
+        interactive: Bool = true
     ) -> some View {
         if #available(iOS 26, *) {
             // 参数化原生形状：系统 Liquid Glass 的按压高亮/形变只认 Capsule / RoundedRectangle 这类
             // 参数化类型，传自由 path（SoftGlassPath）时高亮会回退成默认胶囊（金刚区圆角瓦片按下去
             // 泛出胶囊光的根因）。三族分支各自类型稳定；消费方禁止跨族切换（见 [POS]）。
+            // isEnabled 只换 Glass 值。interactive 为假时仍是 regular，只是不跟按下形变。
+            // materialize 在调用点保持常量，避免退场时再换修饰符分支。
+            let glass: Glass = if !isEnabled {
+                .identity
+            } else if interactive {
+                .regular.interactive()
+            } else {
+                .regular
+            }
             switch shape.parametricFamily {
             case .capsule:
-                self.glassEffect(.regular.interactive(), in: Capsule())
+                self.glassEffect(glass, in: Capsule())
                     .ccGlassEffectID(id, in: namespace)
+                    .ccGlassMaterialize(materialize)
             case .rounded(let radius):
-                self.glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: radius, style: .continuous))
+                self.glassEffect(glass, in: RoundedRectangle(cornerRadius: radius, style: .continuous))
                     .ccGlassEffectID(id, in: namespace)
+                    .ccGlassMaterialize(materialize)
             case .freeform:
-                self.glassEffect(.regular.interactive(), in: shape.glassPath)
+                self.glassEffect(glass, in: shape.glassPath)
                     .ccGlassEffectID(id, in: namespace)
+                    .ccGlassMaterialize(materialize)
             }
         } else {
-            self.modifier(SoftGlassModifier(shape: shape))
+            self.modifier(SoftGlassModifier(shape: shape, shown: isEnabled))
         }
     }
 
@@ -198,16 +215,27 @@ private extension View {
             self
         }
     }
+
+    /// materialize 在每个调用点是常量：真就一直挂着退场过渡，假就不挂
+    @ViewBuilder
+    func ccGlassMaterialize(_ on: Bool) -> some View {
+        if on {
+            self.glassEffectTransition(.materialize)
+        } else {
+            self
+        }
+    }
 }
 
 /// 微拟物软玻璃修饰符 (iOS 25-)
 public struct SoftGlassModifier: ViewModifier {
     let shape: SoftGlassShape
+    var shown: Bool = true
 
     public func body(content: Content) -> some View {
         content
-            .background(backgroundView)
-            .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 2)
+            .background(backgroundView.opacity(shown ? 1 : 0))
+            .shadow(color: Color.black.opacity(shown ? 0.08 : 0), radius: 8, x: 0, y: 2)
     }
 
     /// 同一几何类型画底与描边：切形不换分支，圆角可动画

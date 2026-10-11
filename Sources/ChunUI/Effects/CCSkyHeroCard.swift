@@ -1,6 +1,6 @@
 /**
- * [INPUT]: 依赖 Effects/CCCloudField、Color.cc.foreground/border、SwiftUI TimelineView
- * [OUTPUT]: 对外提供 CCSkyHeroCard / CCSkyHeroBackdrop——Cromma 官网首屏卡：圆上角、点阵 + 天蓝极光（blur 56 / multiply）+ 体积云；侧栏跟手时暂停，不降效果
+ * [INPUT]: 依赖 Color.cc.foreground/border、SwiftUI TimelineView
+ * [OUTPUT]: 对外提供 CCSkyHeroCard / CCSkyHeroBackdrop——Cromma 官网首屏卡：圆上角、点阵（步长 10pt / 原点 5pt / 圆 1.8pt，前景 0.28）+ 天蓝极光（blur 56 / multiply）；无体积云；侧栏跟手时暂停，不降效果
  * [POS]: Effects 的落地/首页英雄卡。色锁定 Cromma 蓝（#3B6CFF）与天色，不走宿主 primary（Zinner 粉会把极光染错）
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -48,7 +48,7 @@ public struct CCSkyHeroCard<Content: View>: View {
     }
 }
 
-/// 点阵 + 极光 + 云。侧边栏跟手时由 ccAtmospherePaused 停 TimelineView / Metal；列表 Store 刷新不得拆 MTKView。
+/// 点阵 + 极光。侧边栏跟手时由 ccAtmospherePaused 停 TimelineView；列表 Store 刷新不得拆氛围层。
 public struct CCSkyHeroBackdrop: View {
     public init() {}
 
@@ -59,14 +59,12 @@ public struct CCSkyHeroBackdrop: View {
             SkyAurora()
                 .blendMode(.multiply)
                 .mask(Self.fadeMask(dots: false))
-            CCCloudField()
-                .mask(Self.fadeMask(dots: false))
         }
         .allowsHitTesting(false)
         .accessibilityHidden(true)
     }
 
-    /// 点阵 0%→45% 60%→85% 透；极光/云 0–34% 实、62% 70%、86% 22%、底透（与 Cromma .aurora-fade / .dot-grid 同构）
+    /// 点阵 + 极光两层，无体积云。点阵 0%→45% 60%→85% 透；极光 0–34% 实、62% 70%、86% 22%、底透（与 Cromma .aurora-fade / .dot-grid 同构）
     static func fadeMask(dots: Bool) -> some View {
         LinearGradient(
             stops: dots
@@ -101,14 +99,14 @@ private struct SkyDotGrid: View {
     var body: some View {
         Canvas { context, size in
             let color = Color.cc.foreground.opacity(0.28)
-            var x: CGFloat = 8
+            var x: CGFloat = 5
             while x < size.width {
-                var y: CGFloat = 8
+                var y: CGFloat = 5
                 while y < size.height {
-                    context.fill(Path(ellipseIn: CGRect(x: x - 1.1, y: y - 1.1, width: 2.2, height: 2.2)), with: .color(color))
-                    y += 16
+                    context.fill(Path(ellipseIn: CGRect(x: x - 0.9, y: y - 0.9, width: 1.8, height: 1.8)), with: .color(color))
+                    y += 10
                 }
-                x += 16
+                x += 10
             }
         }
         .allowsHitTesting(false)
@@ -210,7 +208,7 @@ private struct SkyAurora: View {
 #Preview("极光卡") {
     ScrollView {
         CCSkyHeroCard {
-            Text("云心")
+            Text("金刚区")
                 .font(.cc.title2Bold)
                 .foregroundStyle(Color.cc.foreground)
         }

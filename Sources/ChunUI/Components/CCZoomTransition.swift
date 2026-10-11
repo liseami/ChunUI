@@ -1,7 +1,7 @@
 /**
- * [INPUT]: 依赖 UIKit / SwiftUI UIViewRepresentable
- * [OUTPUT]: 对外提供 CCZoomID、ZoomAnchorRegistry、CCZoom.transition(sourceID:)、.ccZoomSource(id:) / .ccZoomDestination(id:)
- * [POS]: DesignSystem/Compents 的 UIKit←SwiftUI Zoom 英雄转场锚点基建；配合 MainViewModel.pushZoom / presentZoom 与 CCSheetConfig.zoom(from:)
+ * [INPUT]: 依赖 UIKit / SwiftUI UIViewRepresentable；减弱动态效果读 UIAccessibility
+ * [OUTPUT]: 对外提供 CCZoomID、ZoomAnchorRegistry、CCZoom.transition(sourceID:)、CCAnchorMotion.sourceFrame / spring(duration:velocity:damping:)、.ccZoomSource(id:) / .ccZoomSource(id: String?) / .ccZoomDestination(id:)
+ * [POS]: DesignSystem/Components 的 UIKit←SwiftUI Zoom 英雄转场锚点基建。来源必须仍在窗口内；同一视图不留在过期 id。配合 MainViewModel.pushZoom / presentZoom 与 CCSheetConfig.zoom(from:)
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
@@ -52,6 +52,8 @@ public final class ZoomAnchorRegistry {
     private init() {}
 
     func registerSource(id: String, view: UIView) {
+        // 同一只视图换 id 时，旧 id 不能继续指着它
+        sources = sources.filter { $0.key == id || $0.value.view !== view }
         sources[id] = WeakViewBox(view)
         prune()
     }
@@ -71,7 +73,9 @@ public final class ZoomAnchorRegistry {
 
     func sourceView(id: String) -> UIView? {
         prune()
-        return sources[id]?.view
+        guard let view = sources[id]?.view, let window = view.window, !view.bounds.isEmpty,
+              view.convert(view.bounds, to: window).intersects(window.bounds) else { return nil }
+        return view
     }
 
     /// 主卡 destination 在 hosting VC 坐标系下的 alignmentRect；无锚点时返回 nil
@@ -164,6 +168,16 @@ extension View {
         modifier(ZoomSourceModifier(id: id))
     }
 
+    /// sourceID 为 nil 时不登记（通用件上可选的锚点）
+    @ViewBuilder
+    public func ccZoomSource(id: String?) -> some View {
+        if let id {
+            ccZoomSource(id: id)
+        } else {
+            self
+        }
+    }
+
     /// 登记 Zoom 转场落点 alignmentRect（个人主页主卡 / 帖子详情 / 发帖页）
     public func ccZoomDestination(id: String) -> some View {
         modifier(ZoomDestinationModifier(id: id))
@@ -177,5 +191,33 @@ extension View {
         } else {
             self
         }
+    }
+}
+
+/// 页面与图片共享的锚点边界：一律从仍在窗口中的来源解析到转场容器，不缓存上一次的屏幕框。
+public enum CCAnchorMotion {
+    public static func sourceFrame(_ source: UIView?, in container: UIView) -> CGRect? {
+        // 容器可以是窗口本身（浮层直接挂在窗口上）
+        guard let source, let parent = source.superview, let window = source.window,
+              (container as? UIWindow ?? container.window) === window, !source.bounds.isEmpty else { return nil }
+        let frame = parent.convert(source.layer.presentation()?.frame ?? source.frame, to: container)
+        var visible = frame.intersection(container.bounds)
+        var ancestor: UIView? = parent
+        while let view = ancestor {
+            if view.isHidden { return nil }
+            if view.clipsToBounds { visible = visible.intersection(view.convert(view.bounds, to: container)) }
+            ancestor = view.superview
+        }
+        guard !visible.isNull, visible.width > 1, visible.height > 1,
+              frame.origin.x.isFinite, frame.origin.y.isFinite, frame.width.isFinite, frame.height.isFinite else { return nil }
+        return frame
+    }
+
+    /// 锚点转场的弹簧：缺省临界阻尼（dampingRatio 1）；damping < 1 给要一丝弹性的长出。减弱动态效果时退成 0.2s ease-out（Cromma motionLow）。
+    public static func spring(_ duration: Double, velocity: CGVector = .zero, damping: CGFloat = 1) -> UIViewPropertyAnimator {
+        if UIAccessibility.isReduceMotionEnabled {
+            return UIViewPropertyAnimator(duration: 0.2, curve: .easeOut)
+        }
+        return UIViewPropertyAnimator(duration: duration, timingParameters: UISpringTimingParameters(dampingRatio: damping, initialVelocity: velocity))
     }
 }

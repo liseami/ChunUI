@@ -1,7 +1,7 @@
 
 /**
  * [INPUT]: 依赖 CoreImage.CIFilterBuiltins 与 QuartzCore 的 CAFilter variableBlur 运行时能力
- * [OUTPUT]: 对外提供 VariableBlurDirection、VariableBlurView、VariableBlurUIView 渐进背景模糊组件
+ * [OUTPUT]: 对外提供 CCLayerFilter（CAFilter 唯一入口）、VariableBlurDirection、VariableBlurView、VariableBlurUIView 渐进背景模糊组件
  * [POS]: DesignSystem 的通用变量模糊特效，被 MainView、ProfileEditView、VipBuyView 与 FloatingChatOverlay 复用
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -9,6 +9,17 @@
 import CoreImage.CIFilterBuiltins
 import QuartzCore
 
+
+/// CAFilter 是 QuartzCore 的私有类，只经运行时取。全包只此一处造它
+public enum CCLayerFilter {
+    public static func make(_ type: String) -> NSObject? {
+        guard let cls = NSClassFromString("CAFilter") as? NSObject.Type,
+              let filter = cls.perform(NSSelectorFromString("filterWithType:"), with: type)?.takeUnretainedValue() as? NSObject else {
+            return nil
+        }
+        return filter
+    }
+}
 
 public enum VariableBlurDirection {
     case blurredTopClearBottom
@@ -48,15 +59,7 @@ open class VariableBlurUIView: UIVisualEffectView {
     public init(maxBlurRadius: CGFloat = 20, direction: VariableBlurDirection = .blurredTopClearBottom, startOffset: CGFloat = 0) {
         super.init(effect: UIBlurEffect(style: .regular))
 
-        // `CAFilter` is a private QuartzCore class that dynamically create using Objective-C runtime.
-        guard let CAFilter = NSClassFromString("CAFilter")! as? NSObject.Type else {
-            print("[VariableBlur] Error: Can't find CAFilter class")
-            return
-        }
-        guard let variableBlur = CAFilter.self.perform(NSSelectorFromString("filterWithType:"), with: "variableBlur").takeUnretainedValue() as? NSObject else {
-            print("[VariableBlur] Error: CAFilter can't create filterWithType: variableBlur")
-            return
-        }
+        guard let variableBlur = CCLayerFilter.make("variableBlur") else { return }
 
         // The blur radius at each pixel depends on the alpha value of the corresponding pixel in the gradient mask.
         // An alpha of 1 results in the max blur radius, while an alpha of 0 is completely unblurred.

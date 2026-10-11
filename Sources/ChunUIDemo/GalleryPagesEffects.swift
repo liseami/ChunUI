@@ -286,9 +286,9 @@ struct ShaderZooPage: View {
                 RainbowLineView()
                     .frame(height: 60)
             }
-            GallerySection(title: "CCSkyHeroCard · 极光卡 + 点阵 + 云") {
+            GallerySection(title: "CCSkyHeroCard · 极光卡 + 点阵") {
                 CCSkyHeroCard(height: 260) {
-                    Text("云心")
+                    Text("金刚区")
                         .font(.cc.title2Bold)
                         .foregroundStyle(Color.cc.foreground)
                 }

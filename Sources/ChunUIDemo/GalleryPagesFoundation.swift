@@ -1,5 +1,5 @@
 /**
- * [INPUT]: 依赖 ChunUI Theme 令牌（Color.cc / Font.cc / CGFloat.cc / CCMotion）
+ * [INPUT]: 依赖 ChunUI Theme 令牌（Color.cc / Font.cc / CGFloat.cc / CCMotion）与 CCGlassView
  * [OUTPUT]: 对外提供 ThemePage / MotionPage / ButtonsPage / FormsPage / CardsPage
  * [POS]: ChunUIDemo 的 Foundation + Controls 分区页
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
@@ -131,11 +131,20 @@ struct ButtonsPage: View {
                         .padding(14).softGlassStyle()
                     Text("rounded").ccText(font: .cc.sm, color: .cc.foreground)
                         .padding(14).softGlassStyle(.roundedRectangle(12))
+                    GlassFaceSample().frame(width: 72, height: 64)
                 }
             }
         }
         .navigationTitle("Buttons")
     }
+}
+
+private struct GlassFaceSample: UIViewRepresentable {
+    func makeUIView(context: Context) -> CCGlassView {
+        CCGlassView(shape: .roundedRectangle(24))
+    }
+
+    func updateUIView(_ uiView: CCGlassView, context: Context) {}
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

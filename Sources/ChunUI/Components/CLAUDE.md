@@ -32,7 +32,13 @@ CCRainbowBar.swift: 彩虹进度条（12 色异速交织，TimelineView 取模�
 CCBannerLine.swift: 横幅线条
 CCLeatherStyle.swift: 皮革质感
 CCTrackSeam.swift: 埋点依赖倒置座（CCTrack.onTap + .ccTrackTap）
-CCZoomTransition.swift: UIKit Zoom 英雄转场基建（锚点注册表 + 装配工厂）
+CCSmoothCorner.swift: 连续曲率圆角（Figma smoothing：直边 → 三次贝塞尔 → 圆弧 → 对称贝塞尔；s = 0 普通圆角，s = 1 超椭圆）。path 给闭合轮廓；append / tail / split / solve 公开，供气泡在回落贝塞尔上切倒角
+CCMicGrille.swift: 麦克风网罩。CCGrilleLayout.holes 给孔心（奇数行错开、中间字带不打孔）；CCGrilleLayout.image 与 CCMicGrille 把半透明暗孔叠在玻璃上，孔内阴影下移 0.75、模糊 1
+CCGlassView.swift: UIKit 玻璃面。iOS 26 用 UIGlassEffect，18.6–25 用超薄磨砂；形走 SoftGlassShape，着色可空，materialized 关掉即退场。SwiftUI 玻璃仍走 ccGlassEffect
+CCHoldTalk.swift: 按住说话的落点与弹簧。CCHoldZone 是中 / 取消 / 转文字；CCHoldSlab 给出整板、凹屏、提示行、孔阵、左右垫和按进度下移的框；zone 用板上沿和 12pt 迟滞判区；CCHoldSpring 阻尼比 1，升起 0.26、落下 0.2
+CCVoiceScreen.swift: 凹屏点阵模型。列式声纹、熄点呼吸、转文字字行、3×5 点阵数字、开关机光圈。逐帧只改数组
+CCVoiceScreenView.swift: 凹屏。暗色屏面、上沿内阴影、下沿唇边、斜向反光；点阵走 CCVoiceDots.metal，数字是同一套实心点
+CCZoomTransition.swift: UIKit Zoom 英雄转场基建（锚点注册表：同一视图不留过期 id，source 无窗/空框/出窗返回 nil；CCAnchorMotion 解析仍在窗口中的来源框 + 临界阻尼弹簧，减弱动态效果退 0.2s ease-out；ccZoomSource 可空 id）
 CCVideo.swift: 视频缩略/查看器（跟手拖拽回落）
 CCCameraPicker.swift: 系统相机命令式出口（AppHelper.presentCamera → UIImage；无相机返回 false），与 CCPHPicker 并列
 CCPHPicker.swift: 系统相册命令式出口（PHPicker → [PickedMedia]，出口挂 AppHelper）

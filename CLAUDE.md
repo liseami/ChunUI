@@ -26,7 +26,7 @@ Package.swift - SPM 清单：双 target 同构 swiftSettings（.v5 + defaultIsol
 </config>
 
 <rules>
-组件归属铁律（长期开发范式）：一切组件级资产——按钮/toast/toggle/骨架屏/全部 shader 特效/几何原子——唯一真相在本包；宿主 App 仓库禁止落地此类实现（发现即迁入本包）。变更流向恒为：改本包 → 双 target 构建全绿 → 推 main → 宿主升级 Package.resolved revision 引用。
+组件归属铁律（长期开发范式）：一切组件级资产——按钮/toast/toggle/骨架屏/全部 shader 特效/几何原子——唯一真相在本包；宿主 App 仓库禁止落地此类实现（发现即迁入本包）。变更流向恒为：改本包 → 推 main。Chat0IM 用旁边本地包 ../../ChunUI，与本包一起维护；Xcode Cloud 克隆本仓库 main 到同级目录，宿主不改远程 SPM。
 质感基准：Cloudflare Kumo（kumo-ui.com）/ Laper 同构——强调钮受光（ring 深一线 + 渐变 + 顶部 1px 内高光只蒙上半 + shadow-xs）、toast 叠放编舞（曲线 cubic-bezier(0.22,1,0.36,1)）、Kumo Switch 扁轨方滑块、SkeletonLine 随机时长/相位独立扫光。CCNeoButton 圆角 height×0.38 连续圆禁胶囊；自定义内容走 View.ccNeoChrome；CCSegmentedControl 56pt 凹槽圆角矩形。
 来源同构：本包提取自 Chat0IM/Chat0IM/DesignSystem（上游），上游演进后同步须手动移植；组件名保持 CC 前缀不变。
 业务隔离铁律：包内禁止出现宿主类型（MainViewModel/UserManager/AppConfig/ConfigStore）；宿主定制一律走 ChunUI.* 静态接线座与 CCStrings。

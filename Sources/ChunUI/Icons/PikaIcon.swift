@@ -5,7 +5,7 @@
 
 /**
  * [INPUT]: 依赖 DesignSystem/PikaIcons.xcassets 的 pika 命名空间模板矢量资产（1225 枚，迁自 Laper pika-icons）
- * [OUTPUT]: 对外提供 PikaIcon 组件与 PikaIcon.Name 常用图标名常量
+ * [OUTPUT]: 对外提供 PikaIcon 组件、PikaIcon.uiImage（模板 UIImage）与 PikaIcon.Name 常用图标名常量
  * [POS]: DesignSystem/Compents 的图标原子组件，全应用统一图标入口，替代散落的 SF Symbols
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -36,6 +36,11 @@ public struct PikaIcon: View {
             .scaledToFit()
             .frame(width: size, height: size)
             .foregroundStyle(color)
+    }
+
+    /// UIKit 取同一张模板图
+    public static func uiImage(_ name: String) -> UIImage? {
+        UIImage(named: "pika/\(name)", in: .module, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
     }
 }
 

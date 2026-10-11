@@ -8,6 +8,6 @@ ChunUI.swift: 包门面——configure(colors:strings:) 唯一初始化入口 + 
 CCStrings.swift: 组件内建文案可覆写表（默认英文），current 由 configure 写入，组件禁直连 String(localized:)
 CCExports.swift: @_exported 系统框架基座（SwiftUI/UIKit/Combine/Foundation/QuartzCore），第三方禁入
 CCDesign.swift: CCDesigin 公开命名空间 + 组件 Preview
-Blur.swift: VariableBlurView 渐进模糊原子（CAFilter variableBlur，上下/左右方向）
+Blur.swift: CCLayerFilter 是 CAFilter 的唯一入口；VariableBlurView 渐进模糊原子（variableBlur，上下/左右方向）
 
 [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md

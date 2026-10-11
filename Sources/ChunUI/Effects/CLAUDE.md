@@ -21,6 +21,6 @@ CCCardSwap.swift: 卡堆轮换（React Bits CardSwap 移植）双形态——dia
 CCParticleText.swift: 粒子聚字（React Bits ParticleText 移植：灰度位图采样字形 → 散开 easeOutCubic 错拍聚合 → 呼吸漂浮 + 拖动斥力；调色板 12 桶批量 Path 填充禁逐粒 fill；Reduce Motion 直落）
 CCGradientWavesView.swift: 倒挂涟漪氛围层（MTKView 真管线 30fps 透明混合；speech 0…1 能量经渲染器攻快 0.5/衰慢 0.1 包络平滑；配色三层拉满对比 horizon=primary 混黑 15%/wave=混白 30%/crest=纯白，**禁混背景淡化——那是隐身元凶**；Reduce Motion 暂停；管线装配失败 DEBUG 报错不静默）
 CCCloudField.swift: Cromma 舷窗白云 IsolatedCloudMTKView（30fps 原生 DPR；ccAtmospherePaused / 离窗才 pause；云连续慢卷无扫光）。点阵/极光不进这层
-CCSkyHeroCard.swift: 首页英雄卡（点阵 + Cromma 天蓝 #3B6CFF 极光 blur56/multiply + 体积云，Cromma mask 同构；侧栏跟手暂停氛围；禁宿主粉）
+CCSkyHeroCard.swift: 首页英雄卡（点阵 + 极光，云已裁；点阵步长 10pt / 圆 1.8pt；Cromma 天蓝 #3B6CFF blur56/multiply，Cromma mask 同构；侧栏跟手暂停氛围；禁宿主粉）
 
 [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
