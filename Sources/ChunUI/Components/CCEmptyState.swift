@@ -1,6 +1,6 @@
 /**
  * [INPUT]: 依赖 Color.cc/Font.cc、Assets.xcassets/Illustration/empty-no-*（oxipng 无损）
- * [OUTPUT]: 对外提供 CCEmptyKind + CCEmptyState——一级页/个人主页模块统一缺省图组件（message + 可选 detail 两行）
+ * [OUTPUT]: 对外提供 CCEmptyKind + CCEmptyState——一级页/个人主页模块统一缺省图组件（message + 可选 detail 两行；可换入宿主的仪器图）
  * [POS]: DesignSystem/Compents 的空态真相源；禁止业务页手写 Image+灰字拼凑
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -39,6 +39,12 @@ public struct CCEmptyState: View {
     var imageSize: CGFloat = 200
     /// 模块内嵌时去掉撑满 Spacer，只占内容高度
     var compact = false
+    /// 插图。静态缺省图走 kind；宿主传入 Anatomy 仪器时替换它
+    private let mark: AnyView
+    /// 文案相对插图的上移。静态图自带透明边，仪器图不收
+    private let tuck: CGFloat
+    /// 仪器图要接指针；静态图不挡页面
+    private let interactive: Bool
 
     public init(kind: CCEmptyKind, message: String, detail: String? = nil, imageSize: CGFloat = 200, compact: Bool = false) {
         self.kind = kind
@@ -46,6 +52,34 @@ public struct CCEmptyState: View {
         self.detail = detail
         self.imageSize = imageSize
         self.compact = compact
+        self.mark = AnyView(
+            Image(kind.imageName)
+                .resizable()
+                .renderingMode(.original)
+                .scaledToFit()
+                .frame(width: imageSize, height: imageSize)
+                .accessibilityHidden(true)
+        )
+        self.tuck = -28
+        self.interactive = false
+    }
+
+    public init<Mark: View>(
+        message: String,
+        detail: String? = nil,
+        imageSize: CGFloat = 200,
+        compact: Bool = false,
+        interactive: Bool = true,
+        @ViewBuilder mark: () -> Mark
+    ) {
+        self.kind = .contact
+        self.message = message
+        self.detail = detail
+        self.imageSize = imageSize
+        self.compact = compact
+        self.mark = AnyView(mark())
+        self.tuck = 8
+        self.interactive = interactive
     }
 
     public var body: some View {
@@ -63,19 +97,13 @@ public struct CCEmptyState: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .allowsHitTesting(false)
+        .allowsHitTesting(interactive)
     }
 
     private var content: some View {
         VStack(spacing: 0) {
-            Image(kind.imageName)
-                .resizable()
-                .renderingMode(.original)
-                .scaledToFit()
-                .frame(width: imageSize, height: imageSize)
-                .accessibilityHidden(true)
+            mark
 
-            // 插图自带透明 padding，文字上提贴紧视觉主体
             VStack(spacing: 4) {
                 Text(message)
                     .font(.cc.footnote)
@@ -91,7 +119,7 @@ public struct CCEmptyState: View {
                 }
             }
             .padding(.horizontal, 40)
-            .padding(.top, -28)
+            .padding(.top, tuck)
         }
     }
 }
