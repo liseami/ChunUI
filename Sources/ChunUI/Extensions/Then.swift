@@ -1,3 +1,9 @@
+/**
+ * [INPUT]: Foundation、CoreGraphics 与 UIKit 几何类型；闭包由调用者同步提供
+ * [OUTPUT]: 线程中立的 Then 协议与 with/do/then 链式配置，保留 NSObject、集合及几何类型遵循
+ * [POS]: Extensions 的通用配置工具；显式 nonisolated 隔开包默认 MainActor，对象访问仍遵循调用者隔离
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 // swiftlint:disable all
 // MIT 许可证 (MIT)
 //
@@ -22,9 +28,9 @@ import Foundation
   import UIKit.UIGeometry
 #endif
 
-public protocol Then {}
+nonisolated public protocol Then {}
 
-extension Then where Self: Any {
+nonisolated extension Then where Self: Any {
 
   /// 使其可以在初始化和复制值类型后立即使用闭包设置属性。
   ///
@@ -33,7 +39,7 @@ extension Then where Self: Any {
   ///       $0.size.width = 100
   ///     }
   @inlinable
-  public func with(_ block: (inout Self) throws -> Void) rethrows -> Self {
+  nonisolated public func with(_ block: (inout Self) throws -> Void) rethrows -> Self {
     var copy = self
     try block(&copy)
     return copy
@@ -47,13 +53,13 @@ extension Then where Self: Any {
   ///       $0.synchronize()
   ///     }
   @inlinable
-  public func `do`(_ block: (Self) throws -> Void) rethrows {
+  nonisolated public func `do`(_ block: (Self) throws -> Void) rethrows {
     try block(self)
   }
 
 }
 
-extension Then where Self: AnyObject {
+nonisolated extension Then where Self: AnyObject {
 
   /// 使其可以在初始化后立即使用闭包设置属性。
   ///
@@ -63,7 +69,7 @@ extension Then where Self: AnyObject {
   ///       $0.text = "Hello, World!"
   ///     }
   @inlinable
-  public func then(_ block: (Self) throws -> Void) rethrows -> Self {
+  nonisolated public func then(_ block: (Self) throws -> Void) rethrows -> Self {
     try block(self)
     return self
   }
