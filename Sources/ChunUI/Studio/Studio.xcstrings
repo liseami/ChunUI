@@ -1757,121 +1757,121 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "More Apps"
+            "value" : "More from CHUNXIANG"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "其他作品"
+            "value" : "CHUNXIANG 的其他作品"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "其他作品"
+            "value" : "CHUNXIANG 的其他作品"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ほかのアプリ"
+            "value" : "CHUNXIANG のほかのアプリ"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "다른 앱"
+            "value" : "CHUNXIANG의 다른 앱"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Weitere Apps"
+            "value" : "Weitere Apps von CHUNXIANG"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Autres apps"
+            "value" : "Autres apps de CHUNXIANG"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Más apps"
+            "value" : "Más apps de CHUNXIANG"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Altre app"
+            "value" : "Altre app di CHUNXIANG"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mais apps"
+            "value" : "Mais apps de CHUNXIANG"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Другие приложения"
+            "value" : "Другие приложения CHUNXIANG"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Meer apps"
+            "value" : "Meer apps van CHUNXIANG"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fler appar"
+            "value" : "Fler appar från CHUNXIANG"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inne aplikacje"
+            "value" : "Inne aplikacje CHUNXIANG"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Diğer uygulamalar"
+            "value" : "CHUNXIANG'ın diğer uygulamaları"
           }
         },
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تطبيقات أخرى"
+            "value" : "تطبيقات أخرى من CHUNXIANG"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "แอปอื่นๆ"
+            "value" : "แอปอื่นๆ จาก CHUNXIANG"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ứng dụng khác"
+            "value" : "Ứng dụng khác của CHUNXIANG"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aplikasi lain"
+            "value" : "Aplikasi lain dari CHUNXIANG"
           }
         },
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aplikasi lain"
+            "value" : "Aplikasi lain daripada CHUNXIANG"
           }
         }
       }
