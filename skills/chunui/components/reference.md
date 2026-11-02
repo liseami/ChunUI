@@ -44,6 +44,7 @@ VStack { rows }.ccGroupCard()               // 设置组卡
 CCCuteTag("128 人", icon:)                   // 统计胶囊（24pt 不透明底+微影）
 CCKeycapTag("BETA", color:)                 // 键帽标签（渐变键面+3px 厚底）
 CCSettingRow(icon:title:trailing:)          // 设置行；trailing: .chevron/.badge/.pro/.text()/.value()/.none
+CCFormSection(title?, footer:) { CCFormRow(title, icon:, value:, divider:) {} }  // 设置分组卡（设置类页面一律用它）；CCFormRow 可给任意前导 + leadingWidth、附件放 accessory、CCFormCheck 单选勾；几何 CCFormTokens
 CCProTag() / CCQuickAction(icon:title:)
 CCChipFlow(spacing:) { chips }              // 换行流布局
 CCCardDeck(deck:$items) { item, i, isTop in card }  // Tinder 无限轮转卡组（甩出→归底）

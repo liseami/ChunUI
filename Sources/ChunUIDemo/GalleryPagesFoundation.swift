@@ -218,6 +218,18 @@ struct CardsPage: View {
                 }
                 .ccGroupCard()
             }
+            GallerySection(title: "CCFormSection · 设置分组") {
+                CCFormSection("通用", footer: "组名与脚注与行文字同一起点") {
+                    CCFormRow("外观", icon: "moon", value: "跟随系统") {}
+                    CCFormRow("语言", icon: "translate", chevron: false, divider: false, action: {}) { CCFormCheck(isOn: true) }
+                }
+                CCFormSection {
+                    CCFormRow("任意前导", leadingWidth: 28) {
+                        RoundedRectangle(cornerRadius: 6.5, style: .continuous).fill(Color.cc.muted)
+                    }
+                    CCFormRow("退出登录", icon: "log-out-right", chevron: false, destructive: true, divider: false) {}
+                }
+            }
             GallerySection(title: "CCChipFlow · 换行流布局") {
                 CCChipFlow(spacing: 8) {
                     ForEach(["SwiftUI", "Metal", "Monochrome", "Neo", "Glass", "Aurora"], id: \.self) { chip in

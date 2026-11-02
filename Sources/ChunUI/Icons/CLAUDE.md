@@ -1,7 +1,7 @@
 # Icons/
 > L2 | 父级: ../../../CLAUDE.md
 
-图标层：Pika 1225 枚 24×24 stroke 模板矢量随包分发。
+图标层：Pika 1230 枚 24×24 通用模板矢量随包分发。
 
 成员清单
 PikaIcon.swift: 图标组件（Image bundle:.module）+ Name 常量层

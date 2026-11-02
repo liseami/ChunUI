@@ -8,6 +8,7 @@ CCNeoButton.swift: 微拟物按钮五变体×三尺寸（圆角 height×0.38 连
 CCButtons.swift: 按钮族（GlassButton/MetalGlassButton/GlassIconButton/CircleButton/返回钮，Pow glow/shake 按压）；CCDesigin.Button 无 icon 转发 CCNeoButton，有 icon 走 ccNeoChrome；pinkGlassButtonStyle / softButtonStyle 旧入口内部已归一 CCNeoSurface（圆角矩形，禁胶囊）
 CCNeoCards.swift: CCAppleCard 连续圆角三级软阴影卡 + CCNeoInput + CCCuteTag/CCKeycapTag 胶囊标签
 CCChatComposer.swift: 通用对话输入坞，1~6 行自长 + 正圆发送钮，running 时换停止；业务坞在宿主里包它
+CCFormGroup.swift: 设置分组表单 CCFormSection（组名 · 平滑圆角卡 · 脚注）/ CCFormRow（任意前导 + leadingWidth · 名字 · 灰色现值 · 附件 · ›，细线从文字起点、末行无线）/ CCFormIcon / CCFormCheck / CCFormRowPressStyle（最短亮起 + 淡出）+ CCFormTokens；几何逐值同构胃之书 BellyFormSection（inset 16 · 圆角 24 平滑 0.6 · 组间 24 · 行高 50 · 图标 22 · 图标到字 14），字号走三梯度（行 base、组名脚注 sm）；设置类页面一律用它，旧 CCSettingRow + ccGroupCard 只留给非设置页
 CCForms.swift: CCInput/CCTextArea/CCToggle/CCCheckbox/CCDatePicker 表单族；CCToggle = Kumo Switch 形制（扁 squircle 轨道 40×20 + 满高正方滑块双层阴影 + 1px ring 开态深一线，150ms ease-out，热区补足 44pt）
 CCTexts.swift: CCText/CCTyperText 打字机
 CCImages.swift: CCWebImage 内建 URLCache 加载器（CCImageLoader.custom 可整体接管）+ UserAvatar + CCAvatarFallback（宿主资产优先 SF 兜底）
