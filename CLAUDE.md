@@ -1,7 +1,7 @@
 # ChunUI - Monochrome 质感 SwiftUI 设计系统开源包
 Swift Package（swift-tools 6.2 · Swift 5 语言模式 + 默认 MainActor 隔离 + 渐进并发）+ iOS 18.6+ + 唯一依赖 Pow(MIT)
 定位：从 Zinner（阿奇）提取的可换肤设计系统——宿主只定义 CCColors 调色板即得同质感全家桶；所有 shader/点阵动效随包。
-位置：SideProject 单仓根 ChunUI/（2026-11-01 经 git subtree add 带完整历史并入），四个 App（胃之书、阿奇、哒啦啦、口袋粉丝）唯一的公共包；GitHub liseami/ChunUI 只是镜像，由单仓 `deploy/mirror.sh ChunUI push main` 快进。
+位置：SideProject 单仓根 ChunUI/（2026-11-01 经 git subtree add 带完整历史并入），四个 App（胃之书、阿奇、哒啦啦、口袋粉丝）唯一的公共包；GitHub liseami/ChunUI 是镜像，也是四个 App 的远程 SPM 源：由单仓 `deploy/mirror.sh ChunUI release x.y.z` 快进 main 并打版本标签。
 
 <directory>
 Sources/ChunUI/ - 主库 target（99+ Swift 文件；@_exported 系统框架基座，第三方仅 Pow 限 CCButtons）
@@ -28,7 +28,7 @@ Package.swift - SPM 清单：双 target 同构 swiftSettings（.v5 + defaultIsol
 </config>
 
 <rules>
-组件归属铁律（长期开发范式）：一切组件级资产——按钮/toast/toggle/骨架屏/全部 shader 特效/几何原子——以及四个 App 共有的能力（语言、外观、设置页骨架、作品目录、图标）唯一真相在本包；宿主 App 禁止落地此类实现（发现即迁入本包）。宿主一律以本地包引用单仓里的 ChunUI；Xcode Cloud 由产品 ci_post_clone 把镜像 main 克隆到同一相对位置。变更流向：改本包 → 推镜像 main → 再推产品镜像。
+组件归属铁律（长期开发范式）：一切组件级资产——按钮/toast/toggle/骨架屏/全部 shader 特效/几何原子——以及四个 App 共有的能力（语言、外观、设置页骨架、作品目录、图标）唯一真相在本包；宿主 App 禁止落地此类实现（发现即迁入本包）。宿主一律以远程 SPM 按版本标签引用 liseami/ChunUI（from: 1.0.0，锁文件入库），禁用本地路径：Xcode 同一时间只让一个窗口加载同一个本地包，多端同开即报 Missing package product。变更流向：改本包 → 双 target 全绿 → `deploy/mirror.sh ChunUI release x.y.z`（推 main + 打标签；破坏性改动升主版本）→ 各 App 更新包版本（Xcode「Update to Latest Package Versions」，锁文件随提交）→ 再推产品镜像。未发版的改动要在某个 App 里联调：把单仓 ChunUI 目录拖进该 App 的工程（Xcode 本地覆盖远程包），联调完移除，不提交这个引用。
 质感基准：Cloudflare Kumo（kumo-ui.com）/ Laper 同构——强调钮受光（ring 深一线 + 渐变 + 顶部 1px 内高光只蒙上半 + shadow-xs）、toast 叠放编舞（曲线 cubic-bezier(0.22,1,0.36,1)）、Kumo Switch 扁轨方滑块、SkeletonLine 随机时长/相位独立扫光。CCNeoButton 圆角 height×0.38 连续圆禁胶囊；自定义内容走 View.ccNeoChrome；CCSegmentedControl 56pt 凹槽圆角矩形。
 来源同构：本包提取自 Chat0IM/Chat0IM/DesignSystem（上游），上游演进后同步须手动移植；组件名保持 CC 前缀不变。
 业务隔离铁律：包内禁止出现宿主类型（MainViewModel/UserManager/AppConfig/ConfigStore）；宿主定制一律走 ChunUI.* 静态接线座与 CCStrings。
