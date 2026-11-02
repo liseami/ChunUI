@@ -235,12 +235,19 @@ struct CardsPage: View {
                     CCStudioGroups.languageItem {},
                     CCStudioGroups.appearanceItem {},
                 ])
-                CCSettingsGroup(CCStudioText.sectionInfo, items: CCStudioGroups.info(onAbout: {}, onFeedback: {}))
+                CCSettingsGroup(CCStudioText.sectionInfo,
+                                items: CCStudioGroups.info(feedbackValue: "3", feedbackBadge: true, onAbout: {}, onFeedback: {}))
                 CCWorksGroup()
                 CCSettingsGroup(CCStudioText.sectionMore, items: CCStudioGroups.more())
                 CCSettingsGroup(nil, items: CCStudioGroups.signOut {})
-                CCLanguageGroup()
-                CCAppearanceGroup()
+                CCLanguageGroup(onPick: { _ in })
+                CCAppearanceGroup(onPick: { _ in })
+                CCFormSection("行副标题 · 红点 · 说明段") {
+                    CCFormRow("会员", icon: "star", subtitle: "解锁全部高级功能", value: "年度", badge: true) {}
+                    CCFormNote("须知", detail: "订阅到期前 24 小时自动续订，可随时在系统设置取消。", divider: false)
+                }
+                Label("分享", pika: "share01")
+                Image.pika("star").foregroundStyle(Color.cc.primary)
                 CCSettingsSignature("ChunUI", "© Chunxiang Studio")
             }
             GallerySection(title: "CCChipFlow · 换行流布局") {
