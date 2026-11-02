@@ -23,8 +23,8 @@ public enum CCStudio {
 
     /// 本 App 的 App Store 数字 id（评分、分享兜底）
     public private(set) static var appStoreID = ""
-    /// 分享面板里的一句话
-    public private(set) static var shareText = ""
+    /// 分享面板里的一句话：分享时才求值，切语言后自然是新语言
+    public private(set) static var shareText: () -> String = { "" }
     /// 分享的链接；缺省是本 App 的 App Store 页
     public private(set) static var shareURL: URL?
     /// 本 App 中台作品目录地址（不带 lang）：…/works
@@ -32,7 +32,8 @@ public enum CCStudio {
     /// 外链出口：缺省交系统打开；宿主可换成应用内浏览器
     public static var openURL: (URL) -> Void = { UIApplication.shared.open($0) }
 
-    public static func configure(appStoreID: String, shareText: String, shareURL: URL? = nil, worksEndpoint: URL?) {
+    public static func configure(appStoreID: String, shareText: @autoclosure @escaping () -> String, shareURL: URL? = nil,
+                                 worksEndpoint: URL?) {
         self.appStoreID = appStoreID
         self.shareText = shareText
         self.shareURL = shareURL
@@ -52,7 +53,7 @@ public enum CCStudio {
     /// 分享：从最上层控制器升起系统分享面板
     public static func share() {
         guard let presenter = AppHelper.shared.topMostViewController() else { return }
-        let items: [Any] = [shareText, shareURL ?? storeURL].filter { !(($0 as? String)?.isEmpty ?? false) }
+        let items: [Any] = [shareText(), shareURL ?? storeURL].filter { !(($0 as? String)?.isEmpty ?? false) }
         let sheet = UIActivityViewController(activityItems: items, applicationActivities: nil)
         sheet.popoverPresentationController?.sourceView = presenter.view
         presenter.present(sheet, animated: true)

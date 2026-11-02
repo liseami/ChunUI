@@ -1,8 +1,9 @@
 /**
  * [INPUT]: 依赖 Components 的 CCSmoothCornerShape（平滑圆角）、PikaIcon、ThinLine 同款细线色 Color.cc.border；Theme 的 Color.cc.*、Font.cc.* 三梯度
- * [OUTPUT]: 对外提供 CCFormTokens（分组几何令牌）、CCFormCardShape、CCFormCardSurface、CCFormSection（组名 · 卡 · 脚注）、CCFormRow（前导 · 名字 · 灰色现值 · 附件 · ›）、CCFormIcon（单色图标前导）、CCFormCheck（单选勾）、CCFormRowPressStyle（行按下高亮）
+ * [OUTPUT]: 对外提供 CCFormTokens（分组几何令牌）、CCFormStyle（宿主皮肤：行字号、小字号、卡面）、CCFormCardShape、CCFormCardSurface、CCFormSection（组名 · 卡 · 脚注）、
+ *           CCFormRow（前导 · 名字[+副标题] · 红点 · 灰色现值 · 附件 · ›）、CCFormNote（卡内说明段）、CCFormIcon（单色图标前导）、CCFormCheck（单选勾）、CCFormRowPressStyle（行按下高亮）
  * [POS]: Components 的分组表单范式，几何逐值同构胃之书 BellyFormSection（源自 Cromma CCGroupList）：设置主页与全部设置子页共用一副卡。
- *        与旧 CCSettingRow + ccGroupCard 并存：旧件仍服务对象详情等非设置页，设置类页面一律用本件。颜色与字号走宿主主题：行字与现值 base，组名与脚注 sm
+ *        与旧 CCSettingRow + ccGroupCard 并存：旧件仍服务对象详情等非设置页，设置类页面一律用本件。颜色走宿主调色板；字号与卡面走 CCFormStyle（缺省行字 base、小字 sm、ChunUI 卡面），四端各注入自己的品牌皮肤
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
@@ -32,6 +33,8 @@ public enum CCFormTokens {
     public static let valueGap: CGFloat = 8
     /// 行间细线
     public static let hairline: CGFloat = 0.5
+    /// 现值前的提醒红点直径
+    public static let badge: CGFloat = 8
     /// › 在灰色上再淡一档
     public static let chevronOpacity: Double = 0.6
     /// 末组下留白；顶由页头让出
@@ -40,6 +43,27 @@ public enum CCFormTokens {
     public static let pressOpacity: Double = 0.08
     public static let pressHold: Double = 0.12
     public static let pressFade: Double = 0.26
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// MARK: - 宿主皮肤：骨架统一，品牌保留——几何走令牌不可改，字号与卡面由宿主启动时注入一次
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+public struct CCFormStyle {
+    /// 行名字、现值、说明段标题
+    public var rowFont: Font
+    /// 组名、脚注、行副标题、说明段正文
+    public var captionFont: Font
+    /// 卡面：nil 即 ChunUI 缺省（卡色 + 发丝边 + 软影）；宿主可换成自己的品牌卡面（轮廓用 CCFormCardShape）
+    public var surface: (() -> AnyView)?
+
+    public init(rowFont: Font = .cc.base, captionFont: Font = .cc.sm, surface: (() -> AnyView)? = nil) {
+        self.rowFont = rowFont
+        self.captionFont = captionFont
+        self.surface = surface
+    }
+
+    public static var current = CCFormStyle()
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -74,6 +98,14 @@ public struct CCFormCardSurface: View {
 public struct CCFormSection<Content: View>: View {
     private typealias T = CCFormTokens
 
+    @ViewBuilder private var surface: some View {
+        if let custom = CCFormStyle.current.surface {
+            custom().allowsHitTesting(false)
+        } else {
+            CCFormCardSurface()
+        }
+    }
+
     let title: String?
     let footer: String?
     let content: Content
@@ -88,16 +120,16 @@ public struct CCFormSection<Content: View>: View {
         VStack(alignment: .leading, spacing: T.headerGap) {
             if let title {
                 Text(title)
-                    .font(.cc.sm)
+                    .font(CCFormStyle.current.captionFont)
                     .foregroundStyle(Color.cc.mutedForeground)
                     .padding(.leading, T.rowInset)
             }
             VStack(spacing: 0) { content }
                 .clipShape(CCFormCardShape())
-                .background(CCFormCardSurface())
+                .background { surface }
             if let footer, !footer.isEmpty {
                 Text(footer)
-                    .font(.cc.sm)
+                    .font(CCFormStyle.current.captionFont)
                     .foregroundStyle(Color.cc.mutedForeground)
                     .padding(.horizontal, T.rowInset)
                     .fixedSize(horizontal: false, vertical: true)
@@ -135,7 +167,10 @@ public struct CCFormRow<Leading: View, Accessory: View>: View {
     private typealias T = CCFormTokens
 
     let title: String
+    let subtitle: String?
     let value: String?
+    /// 现值前的提醒红点（如意见箱有新修复）
+    let badge: Bool
     let chevron: Bool
     let destructive: Bool
     let divider: Bool
@@ -145,11 +180,14 @@ public struct CCFormRow<Leading: View, Accessory: View>: View {
     let leading: Leading
     let accessory: Accessory
 
-    public init(_ title: String, value: String? = nil, chevron: Bool = true, destructive: Bool = false,
+    public init(_ title: String, subtitle: String? = nil, value: String? = nil, badge: Bool = false,
+                chevron: Bool = true, destructive: Bool = false,
                 divider: Bool = true, leadingWidth: CGFloat? = CCFormTokens.icon, action: (() -> Void)? = nil,
                 @ViewBuilder leading: () -> Leading, @ViewBuilder accessory: () -> Accessory) {
         self.title = title
+        self.subtitle = subtitle
         self.value = value
+        self.badge = badge
         self.chevron = chevron
         self.destructive = destructive
         self.divider = divider
@@ -182,16 +220,32 @@ public struct CCFormRow<Leading: View, Accessory: View>: View {
             if let leadingWidth {
                 leading.frame(width: leadingWidth, height: leadingWidth)
             }
-            Text(title)
-                .font(.cc.base)
-                .foregroundStyle(tint)
-                .lineLimit(1)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(CCFormStyle.current.rowFont)
+                    .foregroundStyle(tint)
+                    .lineLimit(1)
+                if let subtitle, !subtitle.isEmpty {
+                    Text(subtitle)
+                        .font(CCFormStyle.current.captionFont)
+                        .foregroundStyle(Color.cc.mutedForeground)
+                        .lineLimit(2)
+                }
+            }
+            // 名字优先：现值先缩到 0.8 再截断，不挤名字
+            .layoutPriority(1)
             Spacer(minLength: T.valueGap)
+            if badge {
+                Circle()
+                    .fill(Color.cc.destructive)
+                    .frame(width: T.badge, height: T.badge)
+            }
             if let value {
                 Text(value)
-                    .font(.cc.base)
+                    .font(CCFormStyle.current.rowFont)
                     .foregroundStyle(Color.cc.mutedForeground)
                     .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
             accessory
             if chevron {
@@ -199,6 +253,7 @@ public struct CCFormRow<Leading: View, Accessory: View>: View {
             }
         }
         .padding(.horizontal, T.rowInset)
+        .padding(.vertical, subtitle == nil ? 0 : 10)
         .frame(minHeight: T.rowHeight)
         .contentShape(Rectangle())
         .overlay(alignment: .bottom) {
@@ -215,18 +270,20 @@ public struct CCFormRow<Leading: View, Accessory: View>: View {
 // ━━━ 便捷构造：单色图标前导（icon 为 nil 即无前导） ━━━
 
 public extension CCFormRow where Leading == CCFormIcon {
-    init(_ title: String, icon: String?, value: String? = nil, chevron: Bool = true, destructive: Bool = false,
+    init(_ title: String, icon: String?, subtitle: String? = nil, value: String? = nil, badge: Bool = false,
+         chevron: Bool = true, destructive: Bool = false,
          divider: Bool = true, action: (() -> Void)? = nil, @ViewBuilder accessory: () -> Accessory) {
-        self.init(title, value: value, chevron: chevron, destructive: destructive, divider: divider,
+        self.init(title, subtitle: subtitle, value: value, badge: badge, chevron: chevron, destructive: destructive, divider: divider,
                   leadingWidth: icon == nil ? nil : CCFormTokens.icon, action: action,
                   leading: { CCFormIcon(icon, tint: destructive ? .cc.destructive : .cc.foreground) }, accessory: accessory)
     }
 }
 
 public extension CCFormRow where Leading == CCFormIcon, Accessory == EmptyView {
-    init(_ title: String, icon: String?, value: String? = nil, chevron: Bool = true, destructive: Bool = false,
+    init(_ title: String, icon: String?, subtitle: String? = nil, value: String? = nil, badge: Bool = false,
+         chevron: Bool = true, destructive: Bool = false,
          divider: Bool = true, action: (() -> Void)? = nil) {
-        self.init(title, icon: icon, value: value, chevron: chevron, destructive: destructive, divider: divider,
+        self.init(title, icon: icon, subtitle: subtitle, value: value, badge: badge, chevron: chevron, destructive: destructive, divider: divider,
                   action: action, accessory: { EmptyView() })
     }
 }
@@ -236,6 +293,47 @@ public extension CCFormRow where Accessory == EmptyView {
          leadingWidth: CGFloat, action: (() -> Void)? = nil, @ViewBuilder leading: () -> Leading) {
         self.init(title, value: value, chevron: chevron, destructive: false, divider: divider,
                   leadingWidth: leadingWidth, action: action, leading: leading, accessory: { EmptyView() })
+    }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// MARK: - 卡内说明段：只读的粗体标题 + 多行灰字（须知、常见问题）；末段传 divider: false
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+public struct CCFormNote: View {
+    private typealias T = CCFormTokens
+
+    let title: String
+    let detail: String
+    let divider: Bool
+
+    public init(_ title: String, detail: String, divider: Bool = true) {
+        self.title = title
+        self.detail = detail
+        self.divider = divider
+    }
+
+    public var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(CCFormStyle.current.rowFont.weight(.semibold))
+                .foregroundStyle(Color.cc.foreground)
+            Text(detail)
+                .font(CCFormStyle.current.captionFont)
+                .foregroundStyle(Color.cc.mutedForeground)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, T.rowInset)
+        .padding(.vertical, 12)
+        .overlay(alignment: .bottom) {
+            if divider {
+                Rectangle()
+                    .fill(Color.cc.border)
+                    .frame(height: T.hairline)
+                    .padding(.leading, T.rowInset)
+            }
+        }
     }
 }
 

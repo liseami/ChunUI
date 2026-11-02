@@ -5,8 +5,10 @@
 
 /**
  * [INPUT]: 依赖 DesignSystem/PikaIcons.xcassets 的 pika 命名空间模板矢量资产（1225 枚，迁自 Laper pika-icons）
- * [OUTPUT]: 对外提供 PikaIcon 组件、PikaIcon.uiImage（模板 UIImage）与 PikaIcon.Name 常用图标名常量
- * [POS]: DesignSystem/Compents 的图标原子组件，全应用统一图标入口，替代散落的 SF Symbols
+ * [OUTPUT]: 对外提供 PikaIcon 组件（定色）、Image.pika（跟随外层 foregroundStyle 染色的模板图）、Label(_:pika:)（菜单行）、
+ *           PikaIcon.uiImage（模板 UIImage）与 PikaIcon.Name 常用图标名常量
+ * [POS]: Icons 的图标唯一入口，四个 App 的全部 UI 图标都从这里取（替代 SF Symbols 与各端自带图标）。
+ *        要定色用 PikaIcon；要随外层 foregroundStyle / tint 染色用 Image.pika；系统菜单只认 Image + Text，用 Label(_:pika:)
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
@@ -41,6 +43,24 @@ public struct PikaIcon: View {
     /// UIKit 取同一张模板图
     public static func uiImage(_ name: String) -> UIImage? {
         UIImage(named: "pika/\(name)", in: .module, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+    }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// MARK: - 跟随外层染色的模板图与菜单行
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+public extension Image {
+    /// Pika 模板图：不定色、不定尺寸，颜色跟外层 foregroundStyle / tint 走
+    static func pika(_ name: String) -> Image {
+        Image("pika/\(name)", bundle: .module).renderingMode(.template)
+    }
+}
+
+public extension Label where Title == Text, Icon == Image {
+    /// 菜单与上下文菜单的一行：名字 + Pika 图标
+    init(_ title: String, pika name: String) {
+        self.init { Text(title) } icon: { Image.pika(name) }
     }
 }
 

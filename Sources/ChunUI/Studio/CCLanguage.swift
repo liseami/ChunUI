@@ -1,6 +1,6 @@
 /**
  * [INPUT]: 依赖 Foundation 的 Bundle / UserDefaults（AppleLanguages）/ Locale、SwiftUI 的 environment(\.locale)
- * [OUTPUT]: 对外提供 CCLanguage（应用内语言：可选语言、所选、生效语言码、取词包、语言名、切换）、Bundle.appLanguage（任何线程可读的取词包）、View.ccLanguageRoot()
+ * [OUTPUT]: 对外提供 CCLanguage（应用内语言：可选语言、所选、生效语言码、取词包、语言名、切换；currentCode 任何线程可读）、Bundle.appLanguage（任何线程可读的取词包）、View.ccLanguageRoot()
  * [POS]: Studio 层的运行时语言唯一实现，四个 App 共用。切换即时生效：取词改走所选语言的 lproj 包，根视图按 epoch 重挂；
  *        同时写 AppleLanguages，冷启动时系统弹窗、权限说明与 Bundle.main 也对齐。宿主的文案入口（String(localized:bundle:)、.local()、生成的 L.*）都只读这里
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
@@ -72,8 +72,11 @@ public final class CCLanguage: ObservableObject {
         epoch += 1
     }
 
-    /// 生效语言的 Locale：数字、日期、复数都按它排版
-    public var locale: Locale { Locale(identifier: code) }
+    /// 生效的语言码，任何线程可读（请求头 X-Language、后台取词）
+    public nonisolated static var currentCode: String { CCLanguageSnapshot.code }
+
+    /// 排版用的 Locale：跟随系统时就是系统的 Locale（保留地区格式、随系统更新）；手选时取所选语言
+    public var locale: Locale { selection == Self.system ? .autoupdatingCurrent : Locale(identifier: code) }
 
     /// 语言名一律用该语言自己的写法（简体中文、English、日本語）；system 显示「跟随系统」的当前语言写法
     public func displayName(_ selection: String) -> String {

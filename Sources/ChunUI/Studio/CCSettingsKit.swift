@@ -3,7 +3,7 @@
  *          CCStudioWorks / CCAppStore / CCLanguage / CCAppearance、Theme 的 Color.cc
  * [OUTPUT]: 对外提供 CCSettingsItem（一行的数据）、CCSettingsGroup（一组卡）、CCSettingsStack（页内分组栈）、
  *           CCStudioGroups（信息组 · 更多组 · 退出登录 · 通用组里的语言与外观两行）、CCWorksGroup（其他作品）、
- *           CCLanguageGroup / CCAppearanceGroup（语言页与外观页的单选卡）、CCSettingsSignature（两行落款）
+ *           CCLanguageGroup / CCAppearanceGroup（语言页与外观页的单选卡，选中轻触感 + 可选 onPick）、CCSettingsSignature（两行落款）
  * [POS]: Studio 层的设置页骨架，单仓根「设置页范式」的唯一实现。四个 App 的设置主页与子页只拼这些件：
  *        页序 资料头 → 账号 · 通用 · 信息 · 其他作品 · 更多 → 退出登录 → 落款；几何走 CCFormTokens，颜色字号走宿主注入的 Color.cc / Font.cc，
  *        图标一律 Pika。页面外壳（导航、页头、资料头）留在宿主
@@ -20,16 +20,21 @@ public struct CCSettingsItem: Identifiable {
     public let id: String
     public let title: String
     public let icon: String?
+    public let subtitle: String?
     public let value: String?
+    /// 现值前的提醒红点
+    public let badge: Bool
     public let destructive: Bool
     public let action: () -> Void
 
-    public init(_ title: String, icon: String?, value: String? = nil, destructive: Bool = false,
-                id: String? = nil, action: @escaping () -> Void) {
+    public init(_ title: String, icon: String?, subtitle: String? = nil, value: String? = nil, badge: Bool = false,
+                destructive: Bool = false, id: String? = nil, action: @escaping () -> Void) {
         self.id = id ?? title
         self.title = title
         self.icon = icon
+        self.subtitle = subtitle
         self.value = value
+        self.badge = badge
         self.destructive = destructive
         self.action = action
     }
@@ -52,7 +57,8 @@ public struct CCSettingsGroup: View {
         if !items.isEmpty {
             CCFormSection(title) {
                 ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                    CCFormRow(item.title, value: item.value, chevron: !item.destructive, destructive: item.destructive,
+                    CCFormRow(item.title, subtitle: item.subtitle, value: item.value, badge: item.badge,
+                              chevron: !item.destructive, destructive: item.destructive,
                               divider: index < items.count - 1, action: item.action) {
                         CCFormIcon(item.icon, tint: item.destructive ? .cc.destructive : .cc.foreground)
                     } accessory: { EmptyView() }
@@ -96,11 +102,12 @@ public enum CCStudioGroups {
     }
 
     /// 信息组固定四行：关于（现值 = 版本）· 意见反馈（现值 = 新修复数等）· 评分 · 分享
-    public static func info(feedbackValue: String? = nil, onAbout: @escaping () -> Void,
+    public static func info(feedbackValue: String? = nil, feedbackBadge: Bool = false, onAbout: @escaping () -> Void,
                             onFeedback: @escaping () -> Void) -> [CCSettingsItem] {
         [
             CCSettingsItem(CCStudioText.about, icon: "information-circle", value: version, id: "about", action: onAbout),
-            CCSettingsItem(CCStudioText.feedback, icon: "message-default", value: feedbackValue, id: "feedback", action: onFeedback),
+            CCSettingsItem(CCStudioText.feedback, icon: "message-default", value: feedbackValue, badge: feedbackBadge,
+                           id: "feedback", action: onFeedback),
             CCSettingsItem(CCStudioText.rate, icon: "star", id: "rate", action: CCStudio.rate),
             CCSettingsItem(CCStudioText.share, icon: "share01", id: "share", action: CCStudio.share),
         ]
@@ -183,8 +190,12 @@ public struct CCWorksGroup: View {
 
 public struct CCLanguageGroup: View {
     @ObservedObject private var language = CCLanguage.shared
+    private let onPick: ((String) -> Void)?
 
-    public init() {}
+    /// onPick：选中后的宿主动作（如收起 sheet）；切换本身已即时生效
+    public init(onPick: ((String) -> Void)? = nil) {
+        self.onPick = onPick
+    }
 
     private var options: [String] { [CCLanguage.system] + language.available }
 
@@ -203,27 +214,48 @@ public struct CCLanguageGroup: View {
     }
 
     private func select(_ option: String) {
-        guard option != language.selection else { return }
-        language.select(option)
+        CCStudioHaptic.pick()
+        if option != language.selection { language.select(option) }
+        onPick?(option)
     }
 }
 
 public struct CCAppearanceGroup: View {
     @ObservedObject private var appearance = CCAppearance.shared
+    private let onPick: ((CCAppearance.Mode) -> Void)?
 
-    public init() {}
+    public init(onPick: ((CCAppearance.Mode) -> Void)? = nil) {
+        self.onPick = onPick
+    }
 
     public var body: some View {
         CCFormSection {
             ForEach(Array(CCAppearance.Mode.allCases.enumerated()), id: \.element) { index, mode in
                 CCFormRow(mode.title, chevron: false, divider: index < CCAppearance.Mode.allCases.count - 1,
-                          action: { appearance.select(mode) }) {
+                          action: { pick(mode) }) {
                     CCFormIcon(mode.icon)
                 } accessory: {
                     CCFormCheck(isOn: appearance.mode == mode)
                 }
             }
         }
+    }
+
+    private func pick(_ mode: CCAppearance.Mode) {
+        CCStudioHaptic.pick()
+        if mode != appearance.mode { appearance.select(mode) }
+        onPick?(mode)
+    }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// MARK: - 单选的轻触感：尊重宿主的触感开关（ChunUI.hapticsEnabled）
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+enum CCStudioHaptic {
+    static func pick() {
+        guard ChunUI.hapticsEnabled else { return }
+        UISelectionFeedbackGenerator().selectionChanged()
     }
 }
 
