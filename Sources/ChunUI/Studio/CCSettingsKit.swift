@@ -149,8 +149,9 @@ public struct CCWorksGroup: View {
 
     public init() {}
 
+    /// 容器恒在：空表时 Group 没有子视图，挂在它上面的 .task 永不触发（冷启动无缓存即永远取不到）；VStack 本身是视图，task 照常起
     public var body: some View {
-        Group {
+        VStack(spacing: 0) {
             if !studio.works.isEmpty {
                 CCFormSection(CCStudioText.sectionWorks) {
                     ForEach(Array(studio.works.enumerated()), id: \.element.id) { index, work in

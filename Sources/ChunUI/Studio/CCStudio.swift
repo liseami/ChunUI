@@ -4,7 +4,7 @@
  * [OUTPUT]: 对外提供 CCStudio（本 App 的工作室身份：App Store id、分享文案、作品目录地址、外链出口；评分与分享动作）、
  *           CCAppStore（应用内 App Store 页）、CCStudioText（工作室通用文案，二十种语言随包）
  * [POS]: Studio 层的门面。四个 App 启动时各 configure 一次，设置页的信息组、更多组、其他作品组、语言与外观页都只读这里；
- *        工作室外链（开发者、小红书、X）只在这里写一次
+ *        工作室外链（开发者、小红书、X）只在这里写一次；configure 拿到作品目录地址即预取一次（四端同一时机，宿主不再各自预取）
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
@@ -38,6 +38,8 @@ public enum CCStudio {
         self.shareText = shareText
         self.shareURL = shareURL
         self.worksEndpoint = worksEndpoint
+        // 作品目录启动即预取：进设置页时已有当前语言的结果，不等组上屏
+        Task { await CCStudioWorks.shared.refresh() }
     }
 
     public static var storeURL: URL {

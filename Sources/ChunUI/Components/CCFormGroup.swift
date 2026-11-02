@@ -1,9 +1,9 @@
 /**
- * [INPUT]: 依赖 Components 的 CCSmoothCornerShape（平滑圆角）、PikaIcon、ThinLine 同款细线色 Color.cc.border；Theme 的 Color.cc.*、Font.cc.* 三梯度
- * [OUTPUT]: 对外提供 CCFormTokens（分组几何令牌）、CCFormStyle（宿主皮肤：行字号、小字号、卡面）、CCFormCardShape、CCFormCardSurface、CCFormSection（组名 · 卡 · 脚注）、
+ * [INPUT]: 依赖 Components 的 CCSmoothCornerShape（平滑圆角）、CCSkin 与 CCSkinPaint（卡面质感）、PikaIcon、ThinLine 同款细线色 Color.cc.border；Theme 的 Color.cc.*、Font.cc.* 三梯度
+ * [OUTPUT]: 对外提供 CCFormTokens（分组几何令牌）、CCFormStyle（宿主皮肤：行字号、小字号）、CCFormCardShape（卡轮廓）、CCFormCardSurface（卡面，四端唯一）、CCFormSection（组名 · 卡 · 脚注）、
  *           CCFormRow（前导 · 名字[+副标题] · 红点 · 灰色现值 · 附件 · ›）、CCFormNote（卡内说明段）、CCFormIcon（单色图标前导）、CCFormCheck（单选勾）、CCFormRowPressStyle（行按下高亮）
  * [POS]: Components 的分组表单范式，几何逐值同构胃之书 BellyFormSection（源自 Cromma CCGroupList）：设置主页与全部设置子页共用一副卡。
- *        与旧 CCSettingRow + ccGroupCard 并存：旧件仍服务对象详情等非设置页，设置类页面一律用本件。颜色走宿主调色板；字号与卡面走 CCFormStyle（缺省行字 base、小字 sm、ChunUI 卡面），四端各注入自己的品牌皮肤
+ *        与旧 CCSettingRow + ccGroupCard 并存：旧件仍服务对象详情等非设置页，设置类页面一律用本件。颜色走宿主调色板；字号走 CCFormStyle（缺省行字 base、小字 sm），四端各注入自己的字号；卡面只有本文件 CCFormCardSurface 一副（同目录 CCSkin.card 九层皮经 CCSkinPaint 画），四端逐像素一致
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
@@ -46,7 +46,7 @@ public enum CCFormTokens {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// MARK: - 宿主皮肤：骨架统一，品牌保留——几何走令牌不可改，字号与卡面由宿主启动时注入一次
+// MARK: - 宿主皮肤：骨架与卡面四端统一，品牌只留字号——几何走令牌不可改，卡面只有 CCFormCardSurface 一副，字号由宿主启动时注入一次
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 public struct CCFormStyle {
@@ -54,20 +54,23 @@ public struct CCFormStyle {
     public var rowFont: Font
     /// 组名、脚注、行副标题、说明段正文
     public var captionFont: Font
-    /// 卡面：nil 即 ChunUI 缺省（卡色 + 发丝边 + 软影）；宿主可换成自己的品牌卡面（轮廓用 CCFormCardShape）
-    public var surface: (() -> AnyView)?
 
-    public init(rowFont: Font = .cc.base, captionFont: Font = .cc.sm, surface: (() -> AnyView)? = nil) {
+    public init(rowFont: Font = .cc.base, captionFont: Font = .cc.sm) {
         self.rowFont = rowFont
         self.captionFont = captionFont
-        self.surface = surface
+    }
+
+    /// 旧入口：卡面已收归 CCFormCardSurface（四端唯一），宿主卡面被忽略；下一个主版本删除
+    @available(*, deprecated, message: "卡面四端唯一（CCFormCardSurface），不再接受宿主卡面；去掉 surface 参数")
+    public init(rowFont: Font = .cc.base, captionFont: Font = .cc.sm, surface: @escaping () -> AnyView) {
+        self.init(rowFont: rowFont, captionFont: captionFont)
     }
 
     public static var current = CCFormStyle()
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// MARK: - 卡面：宿主卡色 + 发丝边 + 一层软影，轮廓是平滑圆角
+// MARK: - 卡轮廓与卡面：平滑圆角 24 · 0.6；卡面是 CCSkin.card 那副九层皮（对方气泡派生），四端唯一
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 public struct CCFormCardShape: Shape {
@@ -78,15 +81,32 @@ public struct CCFormCardShape: Shape {
     }
 }
 
+/// 设置卡唯一卡面：Canvas 里按 CCSkinPaint 画一次，不采样背景、不进 Material。中线暗斑横向拉成跑道：两半各贴一端，中段是纵剖面
 public struct CCFormCardSurface: View {
+    @Environment(\.colorScheme) private var scheme
+    @Environment(\.displayScale) private var displayScale
+
     public init() {}
 
     public var body: some View {
-        CCFormCardShape()
-            .fill(Color.cc.card)
-            .shadow(color: Color.cc.shadow.opacity(0.05), radius: 12, y: 4)
-            .overlay { CCFormCardShape().stroke(Color.cc.border.opacity(0.6), lineWidth: CCFormTokens.hairline) }
-            .allowsHitTesting(false)
+        let skin = CCSkin.card(dark: scheme == .dark)
+        Canvas { ctx, size in
+            let rect = CGRect(origin: .zero, size: size)
+            let path = CCFormCardShape().path(in: rect).cgPath
+            let pixel = 1 / max(1, displayScale)
+            let plateau = Self.plateau(skin, width: size.width)
+            ctx.withCGContext { cg in CCSkinPaint.draw(skin.layers, path: path, body: rect, plateau: plateau, pixel: pixel, in: cg) }
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    /// 跑道半宽：卡宽一半减去中线光斑半径再留 4pt，光斑两端整只落在两侧圆角里
+    private static func plateau(_ skin: CCSkin, width: CGFloat) -> CGFloat {
+        for case let .radial(_, x, _, radius, _, _) in skin.layers where x.0 == .center {
+            return max(0, width / 2 - (radius * CCSkin.unit + 4))
+        }
+        return 0
     }
 }
 
@@ -98,13 +118,7 @@ public struct CCFormCardSurface: View {
 public struct CCFormSection<Content: View>: View {
     private typealias T = CCFormTokens
 
-    @ViewBuilder private var surface: some View {
-        if let custom = CCFormStyle.current.surface {
-            custom().allowsHitTesting(false)
-        } else {
-            CCFormCardSurface()
-        }
-    }
+    private var surface: some View { CCFormCardSurface() }
 
     let title: String?
     let footer: String?

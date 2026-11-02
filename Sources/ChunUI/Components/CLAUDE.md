@@ -8,7 +8,9 @@ CCNeoButton.swift: 微拟物按钮五变体×三尺寸（圆角 height×0.38 连
 CCButtons.swift: 按钮族（GlassButton/MetalGlassButton/GlassIconButton/CircleButton/返回钮，Pow glow/shake 按压）；CCDesigin.Button 无 icon 转发 CCNeoButton，有 icon 走 ccNeoChrome；pinkGlassButtonStyle / softButtonStyle 旧入口内部已归一 CCNeoSurface（圆角矩形，禁胶囊）
 CCNeoCards.swift: CCAppleCard 连续圆角三级软阴影卡 + CCNeoInput + CCCuteTag/CCKeycapTag 胶囊标签
 CCChatComposer.swift: 通用对话输入坞，1~6 行自长 + 正圆发送钮，running 时换停止；业务坞在宿主里包它
-CCFormGroup.swift: 设置分组表单（四端唯一一副卡）CCFormSection（组名 · 平滑圆角卡 · 脚注）/ CCFormRow（任意前导 + leadingWidth · 名字[+副标题] · 红点 · 灰色现值（先缩 0.8 再截断，名字优先）· 附件 · ›，细线从文字起点、末行无线）/ CCFormNote（卡内说明段）/ CCFormIcon / CCFormCheck / CCFormRowPressStyle（最短亮起 + 淡出）+ CCFormTokens；几何逐值同构胃之书（inset 16 · 圆角 24 平滑 0.6 · 组间 24 · 行高 50 · 图标 22 · 图标到字 14）不可改；CCFormStyle 是宿主皮肤（行字号、小字号、卡面），缺省 base / sm / ChunUI 卡面；设置类页面一律用它，旧 CCSettingRow + ccGroupCard 只留给非设置页
+CCFormGroup.swift: 设置分组表单（四端唯一一副卡）CCFormSection（组名 · 平滑圆角卡 · 脚注）/ CCFormRow（任意前导 + leadingWidth · 名字[+副标题] · 红点 · 灰色现值（先缩 0.8 再截断，名字优先）· 附件 · ›，细线从文字起点、末行无线）/ CCFormNote（卡内说明段）/ CCFormIcon / CCFormCheck / CCFormRowPressStyle（最短亮起 + 淡出）+ CCFormTokens；几何逐值同构胃之书（inset 16 · 圆角 24 平滑 0.6 · 组间 24 · 行高 50 · 图标 22 · 图标到字 14）不可改；卡面 CCFormCardSurface 在本文件（CCSkin.card 经 CCSkinPaint 画，四端唯一）；CCFormStyle 是宿主皮肤（只有行字号、小字号，缺省 base / sm；旧 surface 入口已废弃且被忽略）；设置类页面一律用它，旧 CCSettingRow + ccGroupCard 只留给非设置页
+CCSkin.swift: Cromma 质感的数，四端唯一——CCSkinLayer（渐变 · 光斑 · 柔光带 · 定向高光 · 线 · 投影，tail/far 按 outgoing 镜像）与 CCSkin（正文色 + 层表）：bubble(outgoing:dark:) 四副对话皮（青柠 / 白皮 × 亮暗），card(dark:) 由白皮派生（两道线 × 0.45、中线暗斑 × 0.4，不另抄数），unit 40
+CCSkinPaint.swift: Cromma 质感的画法，四端唯一（Cromma CCBubblePaint 同算法）——投影 · 竖向渐变 · 径向光斑（中线可拉成跑道）· 叠描边高斯带 · vImage 定向 rim · 线；轮廓与跑道半宽 plateau 由宿主给，位图与 Canvas 逐像素相同。胃之书 BellyBubblePaint、阿奇 ChatCrommaPaint 只剩各自的跑道几何，CCFormCardSurface 是第三个消费方；三份抄本 2026-11-02 收归
 CCForms.swift: CCInput/CCTextArea/CCToggle/CCCheckbox/CCDatePicker 表单族；CCToggle = Kumo Switch 形制（扁 squircle 轨道 40×20 + 满高正方滑块双层阴影 + 1px ring 开态深一线，150ms ease-out，热区补足 44pt）
 CCTexts.swift: CCText/CCTyperText 打字机
 CCImages.swift: CCWebImage 内建 URLCache 加载器（CCImageLoader.custom 可整体接管）+ UserAvatar + CCAvatarFallback（宿主资产优先 SF 兜底）

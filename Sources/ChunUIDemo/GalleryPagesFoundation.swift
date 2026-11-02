@@ -230,6 +230,21 @@ struct CardsPage: View {
                     CCFormRow("退出登录", icon: "log-out-right", chevron: false, destructive: true, divider: false) {}
                 }
             }
+            GallerySection(title: "CCSkin · Cromma 质感皮（四端唯一）") {
+                HStack(spacing: 12) {
+                    ForEach([false, true], id: \.self) { outgoing in
+                        Canvas { ctx, size in
+                            let body = CGRect(origin: .zero, size: size)
+                            let path = CCFormCardShape().path(in: body).cgPath
+                            let skin = CCSkin.bubble(outgoing: outgoing, dark: false)
+                            ctx.withCGContext { cg in CCSkinPaint.draw(skin.layers, path: path, body: body, outgoing: outgoing, pixel: 1 / 3, in: cg) }
+                        }
+                        .frame(height: 40)
+                        .overlay(Text(outgoing ? "outgoing" : "incoming").foregroundStyle(CCSkin.bubble(outgoing: outgoing, dark: false).textColor))
+                    }
+                }
+                CCFormCardSurface().frame(height: 100)
+            }
             GallerySection(title: "Studio · 页头品牌位（四端同构）") {
                 CCRootBrand(name: "ChunUI", wordmark: Image(systemName: "textformat"), unread: true, action: {}) {
                     Color.cc.muted
