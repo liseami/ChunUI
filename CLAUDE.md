@@ -1,6 +1,7 @@
 # ChunUI - Monochrome 质感 SwiftUI 设计系统开源包
 Swift Package（swift-tools 6.2 · Swift 5 语言模式 + 默认 MainActor 隔离 + 渐进并发）+ iOS 18.6+ + 唯一依赖 Pow(MIT)
 定位：从 Zinner（阿奇）提取的可换肤设计系统——宿主只定义 CCColors 调色板即得同质感全家桶；所有 shader/点阵动效随包。
+位置：SideProject 单仓根 ChunUI/（2026-11-01 经 git subtree add 带完整历史并入），四个 App（胃之书、阿奇、哒啦啦、口袋粉丝）唯一的公共包；GitHub liseami/ChunUI 只是镜像，由单仓 `deploy/mirror.sh ChunUI push main` 快进。
 
 <directory>
 Sources/ChunUI/ - 主库 target（99+ Swift 文件；@_exported 系统框架基座，第三方仅 Pow 限 CCButtons）
@@ -14,6 +15,7 @@ Sources/ChunUI/ORB/ - 拟物 AI 球（发光/粒子/波浪/真实阴影）
 Sources/ChunUI/Markdown/ - Markdown 渲染
 Sources/ChunUI/Presentation/ - 呈现层（AppHelper sheet/alert/toast 门面 + CCNav 导航发现 + TopCardPresenter）
 Sources/ChunUI/Extensions/ - 通用系统扩展子集（业务函数已在提取时肃清）
+Sources/ChunUI/Studio/ - 工作室层（运行时语言 CCLanguage、外观 CCAppearance、工作室身份与通用文案 CCStudio、作品目录 CCStudioWorks、设置页骨架 CCSettingsKit），见 Studio/CLAUDE.md
 Sources/ChunUI/Icons/ - PikaIcon 组件 + PikaIcons.xcassets（1225 枚模板矢量，9.6M）
 Sources/ChunUIDemo/ - 消费者示例 target（GalleryRoot 分区画廊 = 公开 API 面编译测试，被 Example App 消费）
 Example/ - 可运行画廊示例 App（xcodegen project.yml → ChunUIGallery.xcodeproj，引用父目录本地包）
@@ -26,7 +28,7 @@ Package.swift - SPM 清单：双 target 同构 swiftSettings（.v5 + defaultIsol
 </config>
 
 <rules>
-组件归属铁律（长期开发范式）：一切组件级资产——按钮/toast/toggle/骨架屏/全部 shader 特效/几何原子——唯一真相在本包；宿主 App 仓库禁止落地此类实现（发现即迁入本包）。变更流向恒为：改本包 → 推 main。Chat0IM 用旁边本地包 ../../ChunUI，与本包一起维护；Xcode Cloud 克隆本仓库 main 到同级目录，宿主不改远程 SPM。
+组件归属铁律（长期开发范式）：一切组件级资产——按钮/toast/toggle/骨架屏/全部 shader 特效/几何原子——以及四个 App 共有的能力（语言、外观、设置页骨架、作品目录、图标）唯一真相在本包；宿主 App 禁止落地此类实现（发现即迁入本包）。宿主一律以本地包引用单仓里的 ChunUI；Xcode Cloud 由产品 ci_post_clone 把镜像 main 克隆到同一相对位置。变更流向：改本包 → 推镜像 main → 再推产品镜像。
 质感基准：Cloudflare Kumo（kumo-ui.com）/ Laper 同构——强调钮受光（ring 深一线 + 渐变 + 顶部 1px 内高光只蒙上半 + shadow-xs）、toast 叠放编舞（曲线 cubic-bezier(0.22,1,0.36,1)）、Kumo Switch 扁轨方滑块、SkeletonLine 随机时长/相位独立扫光。CCNeoButton 圆角 height×0.38 连续圆禁胶囊；自定义内容走 View.ccNeoChrome；CCSegmentedControl 56pt 凹槽圆角矩形。
 来源同构：本包提取自 Chat0IM/Chat0IM/DesignSystem（上游），上游演进后同步须手动移植；组件名保持 CC 前缀不变。
 业务隔离铁律：包内禁止出现宿主类型（MainViewModel/UserManager/AppConfig/ConfigStore）；宿主定制一律走 ChunUI.* 静态接线座与 CCStrings。

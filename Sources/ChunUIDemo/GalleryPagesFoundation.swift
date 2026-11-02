@@ -230,6 +230,19 @@ struct CardsPage: View {
                     CCFormRow("退出登录", icon: "log-out-right", chevron: false, destructive: true, divider: false) {}
                 }
             }
+            GallerySection(title: "Studio · 设置页骨架（四端同构）") {
+                CCSettingsGroup(CCStudioText.sectionGeneral, items: [
+                    CCStudioGroups.languageItem {},
+                    CCStudioGroups.appearanceItem {},
+                ])
+                CCSettingsGroup(CCStudioText.sectionInfo, items: CCStudioGroups.info(onAbout: {}, onFeedback: {}))
+                CCWorksGroup()
+                CCSettingsGroup(CCStudioText.sectionMore, items: CCStudioGroups.more())
+                CCSettingsGroup(nil, items: CCStudioGroups.signOut {})
+                CCLanguageGroup()
+                CCAppearanceGroup()
+                CCSettingsSignature("ChunUI", "© Chunxiang Studio")
+            }
             GallerySection(title: "CCChipFlow · 换行流布局") {
                 CCChipFlow(spacing: 8) {
                     ForEach(["SwiftUI", "Metal", "Monochrome", "Neo", "Glass", "Aurora"], id: \.self) { chip in
