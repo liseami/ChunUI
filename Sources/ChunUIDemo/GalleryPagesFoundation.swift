@@ -230,6 +230,13 @@ struct CardsPage: View {
                     CCFormRow("退出登录", icon: "log-out-right", chevron: false, destructive: true, divider: false) {}
                 }
             }
+            GallerySection(title: "Studio · 页头品牌位（四端同构）") {
+                CCRootBrand(name: "ChunUI", wordmark: Image(systemName: "textformat"), unread: true, action: {}) {
+                    Color.cc.muted
+                }
+                .foregroundStyle(Color.cc.foreground)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
             GallerySection(title: "Studio · 设置页骨架（四端同构）") {
                 CCSettingsGroup(CCStudioText.sectionGeneral, items: [
                     CCStudioGroups.languageItem {},

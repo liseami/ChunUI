@@ -120,6 +120,7 @@ public enum CCStudioText {
     // 信息组
     public static var about: String { t("about") }
     public static var feedback: String { t("feedback") }
+    public static var settings: String { t("settings") }
     public static var rate: String { t("rate") }
     public static var share: String { t("share") }
     // 更多组
