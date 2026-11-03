@@ -1,5 +1,5 @@
 /**
- * [INPUT]: 依赖 Components 的 CCFormSection / CCFormRow / CCFormIcon / CCFormCheck / CCFormTokens、Studio 的 CCStudio / CCStudioText /
+ * [INPUT]: 依赖 Components 的 CCFormSection / CCFormRow / CCFormIcon / CCFormCheck / CCFormTokens / CCWebImage（作品图标）、Studio 的 CCStudio / CCStudioText /
  *          CCStudioWorks / CCAppStore / CCLanguage / CCAppearance、Theme 的 Color.cc
  * [OUTPUT]: 对外提供 CCSettingsItem（一行的数据）、CCSettingsGroup（一组卡）、CCSettingsStack（页内分组栈）、
  *           CCStudioGroups（信息组 · 更多组 · 退出登录 · 通用组里的语言与外观两行）、CCWorksGroup（其他作品）、
@@ -166,18 +166,17 @@ public struct CCWorksGroup: View {
         .task { await studio.refresh() }
     }
 
+    /// 走包内唯一远程图件 CCWebImage：宿主注入的加载器（胃之书、阿奇为 Kingfisher）或内建 URLCache 加载器，带缓存与重试。
+    /// 不用 AsyncImage：它无缓存、不重试，加载中父视图一刷新即被取消，停在失败态永远是灰块
     private func artwork(_ work: CCWork) -> some View {
-        AsyncImage(url: URL(string: work.iconURL)) { image in
-            image.resizable().scaledToFill()
-        } placeholder: {
-            Color.cc.muted
-        }
-        .frame(width: side, height: side)
-        .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: radius, style: .continuous)
-                .stroke(Color.cc.border.opacity(0.6), lineWidth: CCFormTokens.hairline)
-        }
+        CCDesigin.CCWebImage(str: work.iconURL)
+            .scaledToFill()
+            .frame(width: side, height: side)
+            .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: radius, style: .continuous)
+                    .stroke(Color.cc.border.opacity(0.6), lineWidth: CCFormTokens.hairline)
+            }
     }
 
     private func open(_ work: CCWork) {
