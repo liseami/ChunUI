@@ -15,7 +15,7 @@ Sources/ChunUI/ORB/ - 拟物 AI 球（发光/粒子/波浪/真实阴影）
 Sources/ChunUI/Markdown/ - Markdown 渲染
 Sources/ChunUI/Presentation/ - 呈现层（AppHelper sheet/alert/toast 门面 + CCNav 导航发现 + TopCardPresenter）
 Sources/ChunUI/Extensions/ - 通用系统扩展子集（业务函数已在提取时肃清）
-Sources/ChunUI/Studio/ - 工作室层（运行时语言 CCLanguage、外观 CCAppearance、工作室身份与通用文案 CCStudio、作品目录 CCStudioWorks、设置页骨架 CCSettingsKit、关于页 CCAboutPage、页头品牌位 CCRootBrand），见 Studio/CLAUDE.md
+Sources/ChunUI/Studio/ - 工作室层（运行时语言 CCLanguage、外观 CCAppearance、工作室身份与通用文案 CCStudio、作品目录 CCStudioWorks、设置页骨架 CCSettingsKit、关于页 CCAboutPage、页头品牌位 CCRootBrand、意见箱 Feedback/ 的 CCFeedbackBox + CCFeedbackInbox + CCCountBadge），见 Studio/CLAUDE.md
 Sources/ChunUI/Icons/ - PikaIcon 组件 + PikaIcons.xcassets（1225 枚模板矢量，9.6M）
 Sources/ChunUIDemo/ - 消费者示例 target（GalleryRoot 分区画廊 = 公开 API 面编译测试，被 Example App 消费）
 Example/ - 可运行画廊示例 App（xcodegen project.yml → ChunUIGallery.xcodeproj，引用父目录本地包）

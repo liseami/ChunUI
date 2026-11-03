@@ -1,6 +1,6 @@
 /**
  * [INPUT]: 依赖 ChunUI Theme 令牌（Color.cc / Font.cc / CGFloat.cc / CCMotion）与 CCGlassView
- * [OUTPUT]: 对外提供 ThemePage / MotionPage / ButtonsPage / FormsPage / CardsPage
+ * [OUTPUT]: 对外提供 ThemePage / MotionPage / ButtonsPage / FormsPage / CardsPage；对内 GalleryFeedbackService（意见箱桩服务）与 GalleryFeedbackDemo
  * [POS]: ChunUIDemo 的 Foundation + Controls 分区页
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -246,7 +246,7 @@ struct CardsPage: View {
                 CCFormCardSurface().frame(height: 100)
             }
             GallerySection(title: "Studio · 页头品牌位（四端同构）") {
-                CCRootBrand(name: "ChunUI", wordmark: Image(systemName: "textformat"), unread: true, action: {}) {
+                CCRootBrand(name: "ChunUI", wordmark: Image(systemName: "textformat"), action: {}) {
                     Color.cc.muted
                 }
                 .foregroundStyle(Color.cc.foreground)
@@ -258,7 +258,7 @@ struct CardsPage: View {
                     CCStudioGroups.appearanceItem {},
                 ])
                 CCSettingsGroup(CCStudioText.sectionInfo,
-                                items: CCStudioGroups.info(feedbackValue: "3", feedbackBadge: true, onAbout: {}, onFeedback: {}))
+                                items: CCStudioGroups.info(feedbackBadge: true, onAbout: {}, onFeedback: {}))
                 CCWorksGroup()
                 CCSettingsGroup(CCStudioText.sectionMore, items: CCStudioGroups.more())
                 CCSettingsGroup(nil, items: CCStudioGroups.signOut {})
@@ -277,6 +277,9 @@ struct CardsPage: View {
                             links: [CCAboutLink("用户协议", url: URL(string: "https://chunxiang.ai")!)], onOpen: { _ in })
                     .frame(height: 720)
             }
+            GallerySection(title: "Studio · 意见箱（四端同构）") {
+                GalleryFeedbackDemo()
+            }
             GallerySection(title: "CCChipFlow · 换行流布局") {
                 CCChipFlow(spacing: 8) {
                     ForEach(["SwiftUI", "Metal", "Monochrome", "Neo", "Glass", "Aurora"], id: \.self) { chip in
@@ -290,5 +293,56 @@ struct CardsPage: View {
             }
         }
         .navigationTitle("Cards & Tags")
+    }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// MARK: - Studio · 意见箱：桩服务（两条修复历史、3 条未读）+ CCFeedbackBox + 入口角标
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+@MainActor
+final class GalleryFeedbackService: CCFeedbackService {
+    var appName: String { "ChunUI" }
+    var imageLimit: Int { 3 }
+    var inviteShareText: String { "ChunUI · 一套在意见下自进化的设计系统" }
+
+    func submit(_ draft: CCFeedbackDraft) async throws {
+        try await Task.sleep(for: .seconds(1))
+    }
+
+    func resolved(page: Int, pageSize: Int) async throws -> CCFeedbackPage {
+        guard page == 1 else { return CCFeedbackPage(items: [], hasMore: false) }
+        return CCFeedbackPage(items: [
+            CCResolvedFeedback(id: "1", category: "bug", content: "切换语言后设置页标题没有刷新。", resolvedAt: Date(),
+                               proposerName: "Chun", proposerAvatarURL: ""),
+            CCResolvedFeedback(id: "2", category: "suggestion", content: "希望意见箱能附截图。", resolvedAt: Date(),
+                               proposerName: "", proposerAvatarURL: ""),
+        ], hasMore: false)
+    }
+
+    func unread() async throws -> Int { 3 }
+    func markSeen() async throws {}
+}
+
+struct GalleryFeedbackDemo: View {
+    @ObservedObject private var inbox = CCFeedbackInbox.shared
+    @State private var dirty = false
+
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 8) {
+                Text(dirty ? "有填写" : "未填写").ccText(font: .cc.sm, color: .cc.mutedForeground)
+                Spacer()
+                CCCountBadge(inbox.unread)
+                CCDesigin.GlassIconButton(icon: "message-default") {}
+                    .ccCountBadge(inbox.unread)
+            }
+            CCFeedbackBox(isDirty: $dirty, onSubmitted: {}, emptyArt: Image(systemName: "checkmark.seal"))
+                .frame(height: 720)
+        }
+        .task {
+            CCFeedbackInbox.shared.configure(GalleryFeedbackService())
+            await inbox.refresh()
+        }
     }
 }

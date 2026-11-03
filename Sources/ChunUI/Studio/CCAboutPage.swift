@@ -1,7 +1,7 @@
 /**
  * [INPUT]: 依赖 Theme 的 Color.cc / Font.cc、Components 的 CCDesigin.CCTyperText（打字机）与 ThinLine、Pow 的 shine 重复特效、
  *          StudioArt.xcassets 的 studio/hand-bot 与 studio/hand-human
- * [OUTPUT]: 对外提供 CCAboutPage（关于页正文）、CCAboutLink（底部法律链接一项）、CCStudioArt（两只手的 Image，宿主登录页也从这里取）
+ * [OUTPUT]: 对外提供 CCAboutPage（关于页正文）、CCAboutLink（底部法律链接一项；links(markdown:) 把宿主的 Markdown 法律链接文案拆成链接项）、CCStudioArt（两只手的 Image，宿主登录页也从这里取）
  * [POS]: Studio 层「关于」页的唯一实现，胃之书 AboutAppView 定稿，四个 App 一字不差：
  *        Logo 120（圆角 32、投影）· 应用名打字机 · Version · 两只手从两侧弹入并周期扫光 · 标语 · 细线 · 法律链接。
  *        宿主只给 Logo、名字、版本、标语、链接与打开链接的方式；页头（「关于 xx」+ ✕）与 sheet 外壳归宿主
@@ -34,6 +34,17 @@ public struct CCAboutLink: Identifiable, Sendable {
     public init(_ title: String, url: URL) {
         self.title = title
         self.url = url
+    }
+
+    /// 宿主文案表里的 Markdown 法律链接（如「[用户协议](https://…) ｜ [隐私政策](https://…)」）拆成链接项；
+    /// 只取带链接的片段，分隔符由本页统一画
+    public static func links(markdown: String) -> [CCAboutLink] {
+        guard let text = try? AttributedString(markdown: markdown) else { return [] }
+        return text.runs.compactMap { run in
+            guard let url = run.link else { return nil }
+            let title = String(text[run.range].characters).trimmingCharacters(in: .whitespaces)
+            return title.isEmpty ? nil : CCAboutLink(title, url: url)
+        }
     }
 }
 

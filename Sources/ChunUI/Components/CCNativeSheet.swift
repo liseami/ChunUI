@@ -94,6 +94,8 @@ public final class CCEditSheetContext: ObservableObject {
     public init() {}
 
     @Published private(set) var isDirty = false
+    /// 注册过保存闭包：脏态右上变 ✓、关前三选一；没注册的 sheet（如意见箱，主钮在页内）恒为 ✕、关前只问放弃
+    @Published private(set) var canSave = false
 
     fileprivate weak var host: UIViewController?
     fileprivate var tracksEdits = true
@@ -109,6 +111,7 @@ public final class CCEditSheetContext: ObservableObject {
     /// 注册保存；返回 true 则关闭 sheet
     func registerSave(_ handler: @escaping () async -> Bool) {
         saveHandler = handler
+        canSave = true
     }
 
     func requestClose() {
@@ -170,16 +173,13 @@ public final class CCSheetDismissBinder: NSObject, UIAdaptivePresentationControl
     }
 
     func presentUnsavedAlert() {
+        let save = CCAlertAction(title: CCStrings.current.save, role: .default) { [weak self] in
+            Task { @MainActor in await self?.context.commitSave() }
+        }
         AppHelper.shared.showBottomAlert(
             title: CCStrings.current.unsavedTitle,
             message: CCStrings.current.unsavedMessage,
-            actions: [
-                CCAlertAction(
-                    title: CCStrings.current.save,
-                    role: .default
-                ) { [weak self] in
-                    Task { @MainActor in await self?.context.commitSave() }
-                },
+            actions: (context.canSave ? [save] : []) + [
                 CCAlertAction(
                     title: CCStrings.current.discard,
                     role: .destructive

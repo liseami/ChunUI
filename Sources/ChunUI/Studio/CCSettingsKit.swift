@@ -101,12 +101,12 @@ public enum CCStudioGroups {
                        value: CCAppearance.shared.mode.title, id: "appearance", action: action)
     }
 
-    /// 信息组固定四行：关于（现值 = 版本）· 意见反馈（现值 = 新修复数等）· 评分 · 分享
-    public static func info(feedbackValue: String? = nil, feedbackBadge: Bool = false, onAbout: @escaping () -> Void,
+    /// 信息组固定四行：关于（现值 = 版本）· 意见反馈（有新修复只挂红点，不写现值，胃之书定规）· 评分 · 分享
+    public static func info(feedbackBadge: Bool = false, onAbout: @escaping () -> Void,
                             onFeedback: @escaping () -> Void) -> [CCSettingsItem] {
         [
             CCSettingsItem(CCStudioText.about, icon: "information-circle", value: version, id: "about", action: onAbout),
-            CCSettingsItem(CCStudioText.feedback, icon: "message-default", value: feedbackValue, badge: feedbackBadge,
+            CCSettingsItem(CCStudioText.feedback, icon: "message-default", badge: feedbackBadge,
                            id: "feedback", action: onFeedback),
             CCSettingsItem(CCStudioText.rate, icon: "star", id: "rate", action: CCStudio.rate),
             CCSettingsItem(CCStudioText.share, icon: "share01", id: "share", action: CCStudio.share),

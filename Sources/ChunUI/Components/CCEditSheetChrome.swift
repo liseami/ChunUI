@@ -1,6 +1,6 @@
 /**
  * [INPUT]: 依赖 CCEditSheetContext、CCChromeBacking、CCDesigin.GlassIconButton、PikaIcon、Color.cc/Font.cc
- * [OUTPUT]: 对外提供 CCEditSheetHeader——左标题 + 右液态玻璃 X/✓ + 顶部模糊承托
+ * [OUTPUT]: 对外提供 CCEditSheetHeader——左标题 + 右液态玻璃 X/✓（脏且注册过保存才是 ✓）+ 顶部模糊承托
  * [POS]: DesignSystem 编辑 sheet 统一 chrome；右上角唯一合法关闭/保存钮 = GlassIconButton（与子页返回同制式）
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -54,10 +54,10 @@ public struct CCEditSheetHeader: View {
                 .softGlassStyle(.circle)
         } else {
             CCDesigin.GlassIconButton(
-                icon: editSheet.isDirty ? "check-tick-single" : PikaIcon.Name.close
+                icon: savesOnTap ? "check-tick-single" : PikaIcon.Name.close
             ) {
                 AppHelper.shared.mada(.soft)
-                if editSheet.isDirty {
+                if savesOnTap {
                     saving = true
                     Task {
                         await editSheet.commitSave()
@@ -68,13 +68,16 @@ public struct CCEditSheetHeader: View {
                 }
             }
             .accessibilityLabel(
-                editSheet.isDirty
+                savesOnTap
                     ? CCStrings.current.save
                     : CCStrings.current.cancel
             )
-            .animation(.spring(response: 0.32, dampingFraction: 0.86), value: editSheet.isDirty)
+            .animation(.spring(response: 0.32, dampingFraction: 0.86), value: savesOnTap)
         }
     }
+
+    /// 脏且注册过保存：右上是 ✓，点即保存；否则是 ✕，脏时关前先问
+    private var savesOnTap: Bool { editSheet.isDirty && editSheet.canSave }
 }
 
 /// 脏态同步：任意 Equatable 表单快照变化即 mark dirty

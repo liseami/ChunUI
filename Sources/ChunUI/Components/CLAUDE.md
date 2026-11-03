@@ -19,8 +19,8 @@ CCCommon.swift: ICON 图标映射 + CCEmptyView 旧入口
 CCEmptyState.swift: 统一缺省态（插图资产由宿主提供）
 CCPageHeader.swift: 编辑气质页头（标题+副标题槽+trailing 槽）
 CCFloatingChrome.swift: 页面 chrome 范式（CCChromeBacking 双向模糊承托 + ccFloatingPageHeader）
-CCNativeSheet.swift: 原生 UISheetPresentationController 深度调参 + CCSheetConfig 公开预设 + CCPresentationAnchor 窗口发现（脏态下拉确认）
-CCEditSheetChrome.swift: 编辑 sheet 统一 chrome（X↔✓ 脏态切换）
+CCNativeSheet.swift: 原生 UISheetPresentationController 深度调参 + CCSheetConfig 公开预设 + CCPresentationAnchor 窗口发现 + CCEditSheetContext（脏态下拉确认；没注册保存时确认只给放弃 / 继续编辑）
+CCEditSheetChrome.swift: 编辑 sheet 统一 chrome（脏且注册过保存才 X↔✓；没注册保存恒为 X，脏时关前只问放弃）
 CCBottomAlert.swift: 沉底双胶囊 Alert（CCAlertCenter + CCAlertWindow 置顶窗）
 CCToast.swift: Kumo 叠放 toast（CCToastCenter 多张栈：结果顶换 loading/展开冻结倒计时；CCToastView 叠放编舞：最新在前、旧张缩 0.1 上探 12pt 对齐前张尺寸正文淡出、点整叠展开成列表、限 3 张可见、曲线 cubic-bezier(0.22,1,0.36,1)；卡片 = 状态色圆徽 + 正文 + 关闭钮进度环[冻结同暂停] + 图标色 3.33s 渐变；CCToastWindow 触摸只在叠层命中区 capsuleHitRect/气泡态接管）+ CCAqiBubbleToast + CCKeyboardWatcher
 CCUploadToast.swift: 上传进度胶囊（UploadProgressCenter 字节级进度）
