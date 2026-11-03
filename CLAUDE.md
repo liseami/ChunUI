@@ -4,7 +4,7 @@ Swift Package（swift-tools 6.2 · Swift 5 语言模式 + 默认 MainActor 隔�
 位置：SideProject 单仓根 ChunUI/（2026-11-01 经 git subtree add 带完整历史并入），四个 App（胃之书、阿奇、哒啦啦、口袋粉丝）唯一的公共包；GitHub liseami/ChunUI 是镜像，也是四个 App 的远程 SPM 源：由单仓 `deploy/mirror.sh ChunUI release x.y.z` 快进 main 并打版本标签。
 
 <directory>
-Sources/ChunUI/ - 主库 target（99+ Swift 文件；@_exported 系统框架基座，第三方仅 Pow 限 CCButtons）
+Sources/ChunUI/ - 主库 target（99+ Swift 文件；@_exported 系统框架基座，第三方仅 Pow，限 CCButtons 与 Studio/CCAboutPage 的扫光）
 Sources/ChunUI/Core/ - 包门面（ChunUI.configure 配置入口/CCStrings 文案表/CCExports 导入基座/CCDesign 命名空间/Blur 渐进模糊）
 Sources/ChunUI/Theme/ - 设计令牌（CCColors.current 活体调色板 + Color.cc 访问器/CCTypography 三梯度/CCTokens/CCMotion/CCModifiers 玻璃降级边界/CCSheetChrome/ViewFunc）
 Sources/ChunUI/Components/ - CC 组件族（按钮/表单/卡片/toast/沉底 alert/原生 sheet/骨架屏/相机/相册/浏览器等 40+ 件）
@@ -15,7 +15,7 @@ Sources/ChunUI/ORB/ - 拟物 AI 球（发光/粒子/波浪/真实阴影）
 Sources/ChunUI/Markdown/ - Markdown 渲染
 Sources/ChunUI/Presentation/ - 呈现层（AppHelper sheet/alert/toast 门面 + CCNav 导航发现 + TopCardPresenter）
 Sources/ChunUI/Extensions/ - 通用系统扩展子集（业务函数已在提取时肃清）
-Sources/ChunUI/Studio/ - 工作室层（运行时语言 CCLanguage、外观 CCAppearance、工作室身份与通用文案 CCStudio、作品目录 CCStudioWorks、设置页骨架 CCSettingsKit、页头品牌位 CCRootBrand），见 Studio/CLAUDE.md
+Sources/ChunUI/Studio/ - 工作室层（运行时语言 CCLanguage、外观 CCAppearance、工作室身份与通用文案 CCStudio、作品目录 CCStudioWorks、设置页骨架 CCSettingsKit、关于页 CCAboutPage、页头品牌位 CCRootBrand），见 Studio/CLAUDE.md
 Sources/ChunUI/Icons/ - PikaIcon 组件 + PikaIcons.xcassets（1225 枚模板矢量，9.6M）
 Sources/ChunUIDemo/ - 消费者示例 target（GalleryRoot 分区画廊 = 公开 API 面编译测试，被 Example App 消费）
 Example/ - 可运行画廊示例 App（xcodegen project.yml → ChunUIGallery.xcodeproj，引用父目录本地包）

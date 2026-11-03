@@ -270,7 +270,12 @@ struct CardsPage: View {
                 }
                 Label("分享", pika: "share01")
                 Image.pika("star").foregroundStyle(Color.cc.primary)
-                CCSettingsSignature("ChunUI", "© Chunxiang Studio")
+                CCSettingsSignature("一句标语", "ChunUI 1.3.0")
+            }
+            GallerySection(title: "Studio · 关于页（四端同构）") {
+                CCAboutPage(logo: Image(systemName: "app.fill"), name: "ChunUI", version: "1.3.0", slogan: "一句标语",
+                            links: [CCAboutLink("用户协议", url: URL(string: "https://chunxiang.ai")!)], onOpen: { _ in })
+                    .frame(height: 720)
             }
             GallerySection(title: "CCChipFlow · 换行流布局") {
                 CCChipFlow(spacing: 8) {
