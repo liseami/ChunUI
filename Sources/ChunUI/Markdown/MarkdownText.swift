@@ -1,3 +1,10 @@
+/**
+ * [INPUT]: 依赖 SwiftUI 的 AttributedString 与 Text、Theme 的 Font.cc / Color.cc 与 CCFontFamily.uiFont（代码段 12pt 字）、本目录 MarkdownTextRenderer 的分段
+ * [OUTPUT]: 对外提供 MarkdownText（轻量 Markdown 文本视图：粗体 · 斜体 · 行内代码）
+ * [POS]: Markdown 的展示件；代码段字随宿主字族（缺省系统字），正文字由调用方传入
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
+
  
 
 public struct MarkdownText: View {
@@ -33,7 +40,7 @@ public struct MarkdownText: View {
             
             // 应用字体
             if segment.styles.contains(.code) {
-                segmentText.font = .systemFont(ofSize: 12)
+                segmentText.font = CCFontFamily.uiFont(size: 12)
             } else {
                 var textFont = font
                 if segment.styles.contains(.bold) {

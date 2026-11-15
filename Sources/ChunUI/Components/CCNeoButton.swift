@@ -4,7 +4,7 @@
 //
 
 /**
- * [INPUT]: 依赖 Color.cc/Font.cc 设计令牌、Color.mix 拟物混色、PikaIcon、AppHelper.mada
+ * [INPUT]: 依赖 Color.cc/Font.cc 设计令牌、Theme 的 CCFontFamily（分段钮字）、Color.mix 拟物混色、PikaIcon、AppHelper.mada
  * [OUTPUT]: 对外提供 CCNeoButton（primary/secondary/ghost/outline/danger 五变体 × small/medium/large；primary 可 accent 覆色；async loading + 弹簧按压）、View.ccNeoChrome / ccNeoChromeCircle（自定义内容套同款质感；圆仅输入坞发送特例）、RoundedRectangle.ccButton、CCNeoIconButton、CCNeoPressStyle、CCListRowPressStyle、CCSegmentedControl
  * [POS]: DesignSystem/Compents 按钮族。主钮圆角 = height×0.38 连续圆（禁胶囊）。质感对齐 Laper-app EmphasisEffect：1px 深一线 ring + 上亮下实受光渐变 + 顶沿 1.5px 内高光（只蒙上半，禁整圈白描边）。segment 复刻 17005:772 凹槽+色洗拇指，高 56，槽与拇指同为圆角矩形。业务页禁自绘扁平胶囊，自定义内容走 ccNeoChrome；仅发送钮可走 ccNeoChromeCircle。
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
@@ -373,7 +373,7 @@ public struct CCSegmentedControl<Value: Hashable>: View {
                     selection = item.0
                 } label: {
                     Text(item.1)
-                        .font(.system(size: 16, weight: .medium))
+                        .font(CCFontFamily.font(size: 16, weight: .medium))
                         .foregroundStyle(selected ? Color.cc.primary : Color.cc.mutedForeground)
                         .frame(maxWidth: .infinity)
                         .frame(height: height)

@@ -1,6 +1,6 @@
 /**
  * [INPUT]: 依赖 SwiftUI 的 Font / Color、ChunUI 的 Color.adaptive / Color.hex（输入面三色）、Studio 的 CCStudioText.t（Studio 表取词，跟 CCLanguage）
- * [OUTPUT]: 对内提供 CCFBTokens（意见箱全部几何：页面 · 提出 · 解决 · 邀请 · 分段 · 角标 · 输入面 · 骨架 · 主钮）、CCFBFont（胃之书 Font.cc 同一张系统字号表）、CCFBText（意见箱文案）
+ * [OUTPUT]: 对内提供 CCFBTokens（意见箱全部几何：页面 · 提出 · 解决 · 邀请 · 分段 · 角标 · 输入面 · 骨架 · 主钮）、CCFBFont（胃之书 Font.cc 同一张字号表，字族经 Theme/CCFontFamily）、CCFBText（意见箱文案）
  * [POS]: Studio/Feedback 的原始数值层；本目录其它文件不写魔法数字。数值逐字取自胃之书 FeedbackView / FeedbackResolvedView / FeedbackInviteView、
  *        DesignSystem 的 BellyRootTokens.Segment / Badge、BellyInputTokens、BellySkeletonTokens；字不走包内 Font.cc（梯度不同），一律走 CCFBFont 保证与胃之书逐像素一致
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
@@ -10,12 +10,12 @@ import SwiftUI
 import UIKit
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// MARK: - 字：系统字，常规 / 粗两档（胃之书 CCTypography 同表）
+// MARK: - 字：经 CCFontFamily（缺省系统字），常规 / 粗两档（胃之书 CCTypography 同表）
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 enum CCFBFont {
-    static func of(_ size: CGFloat, bold: Bool = false) -> Font { .system(size: size, weight: bold ? .bold : .regular) }
-    static func ui(_ size: CGFloat, bold: Bool = false) -> UIFont { .systemFont(ofSize: size, weight: bold ? .bold : .regular) }
+    static func of(_ size: CGFloat, bold: Bool = false) -> Font { CCFontFamily.font(size: size, weight: bold ? .bold : .regular) }
+    static func ui(_ size: CGFloat, bold: Bool = false) -> UIFont { CCFontFamily.uiFont(size: size, weight: bold ? .bold : .regular) }
 
     static var title1Bold: Font { of(28, bold: true) }
     static var title2Bold: Font { of(24, bold: true) }

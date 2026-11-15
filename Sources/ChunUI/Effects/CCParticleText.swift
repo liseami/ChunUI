@@ -4,7 +4,7 @@
 //
 
 /**
- * [INPUT]: 依赖 UIKit 离屏灰度位图采样字形、SwiftUI TimelineView + Canvas、Color.cc 主题轴与 Color.mix、Reduce Motion；形制移植 React Bits ParticleText（粒子散开→错拍聚合成字→呼吸漂浮→指针斥力）
+ * [INPUT]: 依赖 UIKit 离屏灰度位图采样字形（字经 Theme 的 CCFontFamily.uiFont）、SwiftUI TimelineView + Canvas、Color.cc 主题轴与 Color.mix、Reduce Motion；形制移植 React Bits ParticleText（粒子散开→错拍聚合成字→呼吸漂浮→指针斥力）
  * [OUTPUT]: 对外提供 CCParticleText——粒子聚字特效（进场从四散聚合出文本，落定后微漂；拖动手指斥开粒子）
  * [POS]: Effects 的文字特效原语，宿主 Onboarding 收益页等消费；性能纲领 = 调色板 12 桶批量 Path 填充（禁逐粒 fill）+ 采样按尺寸缓存；Reduce Motion 直落静态
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
@@ -177,13 +177,13 @@ final class CCParticleTextModel {
         text: String, fontSize: CGFloat, density: Int, in size: CGSize
     ) -> [(point: CGPoint, alpha: CGFloat)] {
         var resolvedSize = fontSize
-        var font = UIFont.systemFont(ofSize: resolvedSize, weight: .heavy)
+        var font = CCFontFamily.uiFont(size: resolvedSize, weight: .heavy)
         var attrs: [NSAttributedString.Key: Any] = [.font: font]
         var textSize = (text as NSString).size(withAttributes: attrs)
         let maxWidth = size.width * 0.92
         if textSize.width > maxWidth {
             resolvedSize = max(16, resolvedSize * maxWidth / textSize.width)
-            font = UIFont.systemFont(ofSize: resolvedSize, weight: .heavy)
+            font = CCFontFamily.uiFont(size: resolvedSize, weight: .heavy)
             attrs = [.font: font]
             textSize = (text as NSString).size(withAttributes: attrs)
         }

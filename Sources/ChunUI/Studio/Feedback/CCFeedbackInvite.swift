@@ -1,5 +1,5 @@
 /**
- * [INPUT]: 依赖本目录 CCFeedbackInbox.shared.service（inviteShareText · inviteShareURL）、CCFBPrimaryButton、CCFBTokens / CCFBFont / CCFBText；Studio 的 CCStudio（storeURL，无服务时兜底）、
+ * [INPUT]: 依赖本目录 CCFeedbackInbox.shared.service（inviteShareText · inviteShareURL）、CCFBPrimaryButton、CCFBTokens / CCFBFont / CCFBText、Theme 的 CCFontFamily（<24h 统计字）；Studio 的 CCStudio（storeURL，无服务时兜底）、
  *          Presentation 的 AppHelper（topMostViewController 呈现系统分享、mada 触感）、Icons 的 PikaIcon check-tick-single、Color.cc（foreground · mutedForeground · background · success）
  * [OUTPUT]: 对内提供 CCFeedbackInvitePage（意见箱「邀请」段：进化路径插图 · 标题 · 两句主张 · <24h 承诺 · 分享按钮）
  * [POS]: Studio/Feedback 的邀请页，逐值移植胃之书 FeedbackInviteView：单色细线插图只在终点着一点成功绿，入场一次描线、节点依次长出（减弱动效直接成图）。
@@ -36,7 +36,7 @@ struct CCFeedbackInvitePage: View {
 
                 VStack(spacing: T.textGap) {
                     Text("<24h")
-                        .font(.system(size: T.statSize, weight: .bold, design: .rounded).monospacedDigit())
+                        .font(CCFontFamily.font(size: T.statSize, weight: .bold, design: .rounded).monospacedDigit())
                         .foregroundStyle(Color.cc.foreground)
                     Text(CCFBText.t("feedback.invite.promise"))
                         .ccText(font: CCFBFont.footnote, color: .cc.mutedForeground)

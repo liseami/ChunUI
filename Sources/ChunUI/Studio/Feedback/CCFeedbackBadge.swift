@@ -1,5 +1,5 @@
 /**
- * [INPUT]: 依赖 Components 的 CCGlassView（危险色着色的系统玻璃胶囊）、本目录 CCFBTokens.Badge、CoreText 量字、Color.cc 的 destructive / destructiveForeground
+ * [INPUT]: 依赖 Components 的 CCGlassView（危险色着色的系统玻璃胶囊）、本目录 CCFBTokens.Badge、Theme 的 CCFontFamily.digitsUIFont（等宽数字字）、CoreText 量字、Color.cc 的 destructive / destructiveForeground
  * [OUTPUT]: 对内提供 CCFBCountBadge（格式化、量宽，纯函数）与 CCFBCountBadgeView（UIKit：玻璃胶囊 + 等宽数字，不接触摸）；对外提供 CCCountBadge（SwiftUI 角标，0 即不出）与 View.ccCountBadge(_:)（入口钮右上的胃之书摆法）
  * [POS]: Studio/Feedback 的数字角标，逐值移植胃之书 DesignSystem/Root 的 BellyCountBadge（Cromma CCCountBadge 未静音态）：着危险色的系统玻璃胶囊、白色等宽粗体数字、至少正圆、千起写 k。
  *        意见箱「解决」分段与宿主的反馈入口钮共用这一枚；宿主只摆位置
@@ -19,8 +19,8 @@ enum CCFBCountBadge {
 
     static var height: CGFloat { B.height }
 
-    /// 等宽数字、粗体
-    static var font: UIFont { UIFont.monospacedDigitSystemFont(ofSize: B.fontSize, weight: .bold) }
+    /// 等宽数字、粗体（经 CCFontFamily：缺省系统等宽数字体）
+    static var font: UIFont { CCFontFamily.digitsUIFont(size: B.fontSize, weight: .bold) }
 
     /// 1–999 原样；千起写 k、百万起写 m，不足 10 个单位留一位小数、一律截断不进位；0 与负数是空串
     static func format(_ n: Int) -> String {

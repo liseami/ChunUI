@@ -4,7 +4,7 @@
 //
 
 /**
- * [INPUT]: 依赖 Color.cc 设计令牌、SwiftUI rotation3DEffect、Reduce Motion；形制移植 React Bits SplitFlapText（机场翻牌板：暗色瓦片 + 中缝 + 上翻页折下/下翻页落定两相动画）
+ * [INPUT]: 依赖 Color.cc 设计令牌、Theme 的 CCFontFamily（翻牌字）、SwiftUI rotation3DEffect、Reduce Motion；形制移植 React Bits SplitFlapText（机场翻牌板：暗色瓦片 + 中缝 + 上翻页折下/下翻页落定两相动画）
  * [OUTPUT]: 对外提供 CCSplitFlapText——逐字翻牌文本板（进场从空白翻入随机字符序列后落定目标；可多词循环；每瓦随 index 错拍）
  * [POS]: Components 的数字/字母展示特效原语，宿主 Onboarding 收益页等消费；Reduce Motion 直落无翻页
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
@@ -189,7 +189,7 @@ private struct CCFlapTile: View {
     /// 半瓦：整字居中后裁半；上半底色微亮、下半微暗（机械瓦片受光）
     private func half(_ character: Character, top: Bool) -> some View {
         Text(String(character == " " ? " " : character))
-            .font(.system(size: fontSize, weight: .heavy, design: .monospaced))
+            .font(CCFontFamily.font(size: fontSize, weight: .heavy, design: .monospaced))
             .foregroundStyle(textColor)
             .shadow(color: .black.opacity(0.4), radius: 1, y: 1)
             .frame(width: tileWidth, height: tileHeight)

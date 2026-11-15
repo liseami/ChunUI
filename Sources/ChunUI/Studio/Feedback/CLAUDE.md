@@ -4,7 +4,7 @@
 意见箱唯一实现，胃之书定稿，四个 App 逐像素同构：顶部「提出 · 解决 · 邀请」分段，「解决」字后挂未读角标。
 意见箱只认 CCFeedbackService 协议（DIP），不认宿主类型：截图上传、接口、会话落定、提示外观都归宿主的服务。
 宿主做三件事：启动时 CCFeedbackInbox.shared.configure(服务)；入口钮挂 .ccCountBadge(inbox.unread)；设置页「意见反馈」行只挂红点（feedbackBadge: inbox.hasUnread），不写现值；sheet 里放 CCFeedbackBox，页头（✕）与「有填写先问」归宿主 sheet。
-视觉件逐值移植胃之书 DesignSystem（分段、角标、输入面、主钮、原卡片、骨架），一律对内（CCFB 前缀），不与包内同名公开件相撞；字走 CCFBFont（胃之书系统字号表），不走包内 Font.cc。
+视觉件逐值移植胃之书 DesignSystem（分段、角标、输入面、主钮、原卡片、骨架），一律对内（CCFB 前缀），不与包内同名公开件相撞；字走 CCFBFont（胃之书字号表，字族经 Theme/CCFontFamily：缺省系统字，胃之书注入 Maple Mono CN），不走包内 Font.cc。
 本目录不引 Pow：主钮按压壳取包内 CCDesigin.CCButton，转圈期间的扫光是包内 shimmer。
 
 成员清单

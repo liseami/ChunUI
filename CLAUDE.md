@@ -6,7 +6,7 @@ Swift Package（swift-tools 6.2 · Swift 5 语言模式 + 默认 MainActor 隔�
 <directory>
 Sources/ChunUI/ - 主库 target（99+ Swift 文件；@_exported 系统框架基座，第三方仅 Pow，限 CCButtons 与 Studio/CCAboutPage 的扫光）
 Sources/ChunUI/Core/ - 包门面（ChunUI.configure 配置入口/CCStrings 文案表/CCExports 导入基座/CCDesign 命名空间/Blur 渐进模糊）
-Sources/ChunUI/Theme/ - 设计令牌（CCColors.current 活体调色板 + Color.cc 访问器/CCTypography 三梯度/CCTokens/CCMotion/CCModifiers 玻璃降级边界/CCSheetChrome/ViewFunc）
+Sources/ChunUI/Theme/ - 设计令牌（CCColors.current 活体调色板 + Color.cc 访问器/CCFontFamily.current 宿主字族注入口（1.4.0，缺省系统字）/CCTypography 三梯度/CCTokens/CCMotion/CCModifiers 玻璃降级边界/CCSheetChrome/ViewFunc）
 Sources/ChunUI/Components/ - CC 组件族（按钮/表单/卡片/toast/沉底 alert/原生 sheet/骨架屏/相机/相册/浏览器等 40+ 件）
 Sources/ChunUI/Effects/ - 视觉特效（极光/生成中点阵/九分形地板/扫光/粒子消散/全息/元球/丝绸等）
 Sources/ChunUI/Shaders/ - 12 个 Metal 着色器 + CCShaders 门面（Bundle.module 取库，禁 ShaderLibrary.default）
@@ -32,6 +32,7 @@ Package.swift - SPM 清单：双 target 同构 swiftSettings（.v5 + defaultIsol
 质感基准：Cloudflare Kumo（kumo-ui.com）/ Laper 同构——强调钮受光（ring 深一线 + 渐变 + 顶部 1px 内高光只蒙上半 + shadow-xs）、toast 叠放编舞（曲线 cubic-bezier(0.22,1,0.36,1)）、Kumo Switch 扁轨方滑块、SkeletonLine 随机时长/相位独立扫光。CCNeoButton 圆角 height×0.38 连续圆禁胶囊；自定义内容走 View.ccNeoChrome；CCSegmentedControl 56pt 凹槽圆角矩形。
 来源同构：本包提取自 Chat0IM/Chat0IM/DesignSystem（上游），上游演进后同步须手动移植；组件名保持 CC 前缀不变。
 业务隔离铁律：包内禁止出现宿主类型（MainViewModel/UserManager/AppConfig/ConfigStore）；宿主定制一律走 ChunUI.* 静态接线座与 CCStrings。
+字族铁律（1.4.0）：包内画文字一律经 CCFontFamily.font / uiFont / digitsUIFont 取字，禁止新写 .system(size:) / UIFont.systemFont 画文字（SF Symbol 与 emoji 除外）。宿主在 ChunUI.configure 之后写一次 CCFontFamily.current（不放进 configure 参数：宿主切语言会重调 configure，缺省参数会把字族冲回系统字）；不写即 .system，与 1.3 逐像素一致。
 资源访问铁律：shader 经 CCShaders（Bundle.module），图标 Image(_, bundle: .module)；禁 ShaderLibrary.default / 裸 Image 取包资产。
 公开面纪律：新组件必须 public + 显式 public init，并在 DemoGallery 加一次消费者构造。
 验证基线：xcodebuild -scheme ChunUI-Package -destination 'generic/platform=iOS' -derivedDataPath .dd build 双 target 全绿。

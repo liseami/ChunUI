@@ -1,11 +1,12 @@
 # Theme/
 > L2 | 父级: ../../../CLAUDE.md
 
-设计令牌层：调色板注入命门与字号/间距/动画铁律，全组件质感的根。
+设计令牌层：调色板与字族两个注入命门、字号/间距/动画铁律，全组件质感的根。
 
 成员清单
 CCColors.swift: 语义调色板 struct + CCColors.current 活体注入点 + Color.cc 访问器（nonisolated 纯值宇宙，shader 闭包可直取）
-CCTypography.swift: Font.cc 三梯度字号铁律（sm 13/base 17/lg 24 + tabbar 例外），历史令牌折叠映射
+CCTypography.swift: Font.cc 三梯度字号铁律（sm 13/base 17/lg 24 + tabbar 例外），历史令牌折叠映射；只管字号与粗细，字经 CCFontFamily 取
+CCFontFamily.swift: 宿主字族注入口（1.4.0）：CCFontFamily.current（缺省 .system）+ font / uiFont / digitsUIFont 三道取字门；系统分支逐字回放原系统字调用，不注入即零变化；注入后固定字号、design 不生效。包内画文字处一律经它，SF Symbol 与 emoji 不经它
 CCTokens.swift: CGFloat.cc 间距/圆角/发丝线宽令牌
 CCMotion.swift: 全局动画令牌（reveal 零过冲 timingCurve + wave 微过冲错峰 + ccPageRise 页切换）
 CCModifiers.swift: 系统效果兼容边界（iOS 26 Liquid Glass / 18.6–25 微拟物同形降级：ccGlassEffect/softGlassStyle；isEnabled 关时换成 Glass.identity，开着且 interactive 为假时是不形变的 regular，materialize 为真才挂退场过渡；CCGlassEffectContainer(spacing:) 让靠近的玻璃融合；SoftGlassShape 含 .custom(AnyShape) 任意轮廓。含 UITextView 的那一块必须停在同一 parametricFamily，跨族会重建子树、键盘二次弹出）+ appleCard/ccGroupCard/shimmer

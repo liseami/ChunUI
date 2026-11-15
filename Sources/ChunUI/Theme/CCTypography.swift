@@ -4,9 +4,9 @@
  * ║                      字体排版系统                                          ║
  * ╚═══════════════════════════════════════════════════════════════════════════╝
  *
- * [INPUT]: 字号配置
- * [OUTPUT]: 系统 Font 实例
- * [POS]: DesignSystem/Theme - 系统字体排版配置
+ * [INPUT]: 字号配置；本目录 CCFontFamily（字族注入口，缺省系统字）
+ * [OUTPUT]: CCTypography 字号表与 Font.cc 访问器（字经 CCFontFamily.font 取）
+ * [POS]: Theme 的字号层：只管字号与粗细，字族归 CCFontFamily；宿主不注入字族时与系统字逐像素一致
  *
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -84,7 +84,7 @@ public extension CCTypography {
     /// 默认配置
     public static let `default` = CCTypography()
 
-    /// 系统字体配置
+    /// 缺省字号表（历史名；字族由 CCFontFamily.current 决定）
     public static let system = CCTypography()
 }
 
@@ -94,14 +94,14 @@ public extension CCTypography {
 
 public extension CCTypography {
 
-    /// 创建系统字体
+    /// 创建字体（字族经 CCFontFamily：缺省系统字）
     public func font(size: CGFloat, bold: Bool = false) -> Font {
-        .system(size: size, weight: bold ? .semibold : .regular)
+        CCFontFamily.font(size: size, weight: bold ? .semibold : .regular)
     }
 
-    /// 创建等宽数字字体
+    /// 创建等宽字体（系统字时取等宽设计；宿主字族时用字族本身）
     public func monoFont(size: CGFloat) -> Font {
-        .system(size: size, design: .monospaced)
+        CCFontFamily.font(size: size, design: .monospaced)
     }
 
     // 预设字体快捷方法
