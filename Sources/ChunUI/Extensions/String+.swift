@@ -5,6 +5,8 @@
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
+import SwiftUI
+
 extension String{
     
     /// 生成随机中文字符串，长度在 length 前后随机波动

@@ -1,9 +1,11 @@
 /**
- * [INPUT]: 依赖 CoreGraphics 的 CGRect（经 Core/CCExports 的系统框架转出）
+ * [INPUT]: 依赖 CoreGraphics 的 CGRect（经 SwiftUI 带入）
  * [OUTPUT]: 包内提供 CGRect.aspectFit / aspectFitWidth / aspectFitHeight（等比适配并居中）
  * [POS]: Extensions 的几何原子；转场遮罩按它算目标框
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
+
+import SwiftUI
 
 extension CGRect {
     /// 按宽或按高等比适配到 frame（SharedTransitionAnimationController 的遮罩用）

@@ -5,6 +5,8 @@
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
+import SwiftUI
+
 extension UIView {
     /// This computed property converts a view's frame to window coordinates.
     /// We do this because we need to know the exact position of a view in the

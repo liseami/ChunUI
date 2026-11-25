@@ -5,6 +5,8 @@
 //  Created by João Gabriel Pozzobon dos Santos on 04/10/22.
 //
 
+import SwiftUI
+
  
 
 /// A CALayer that draws a single blob on the screen

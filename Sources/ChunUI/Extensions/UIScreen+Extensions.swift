@@ -1,5 +1,7 @@
 // An even more obfuscated version of https://github.com/kylebshr/ScreenCorners
 
+import SwiftUI
+
  
 
 extension UIScreen {

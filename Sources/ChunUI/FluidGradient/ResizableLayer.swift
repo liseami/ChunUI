@@ -5,6 +5,8 @@
 //  Created by João Gabriel Pozzobon dos Santos on 03/10/22.
 //
 
+import SwiftUI
+
  
 
 /// An implementation of ``CALayer`` that resizes its sublayers

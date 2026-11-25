@@ -5,6 +5,8 @@
 //  Created by 赵翔宇 on 2025/3/1.
 //
 
+import SwiftUI
+
  
 
 public struct RainbowLineView: View {

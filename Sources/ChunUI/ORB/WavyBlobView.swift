@@ -5,6 +5,8 @@
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
+import SwiftUI
+
 /// 波浪状的动态 Blob 视图
 /// 作者: zhaochunxiang
 /// 创建时间: 2024-01-20

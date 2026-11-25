@@ -4,8 +4,8 @@ Swift Package（swift-tools 6.2 · Swift 5 语言模式 + 默认 MainActor 隔�
 位置：SideProject 单仓根 ChunUI/（2026-11-01 经 git subtree add 带完整历史并入），四个 App（胃之书、阿奇、哒啦啦、口袋粉丝）唯一的公共包；GitHub liseami/ChunUI 是镜像，也是四个 App 的远程 SPM 源：由单仓 `deploy/mirror.sh ChunUI release x.y.z` 快进 main 并打版本标签。
 
 <directory>
-Sources/ChunUI/ - 主库 target（99+ Swift 文件；@_exported 系统框架基座，第三方仅 Pow，限 CCButtons 与 Studio/CCAboutPage 的扫光）
-Sources/ChunUI/Core/ - 包门面（ChunUI.configure 配置入口/CCStrings 文案表/CCExports 导入基座/CCDesign 命名空间/Blur 渐进模糊）
+Sources/ChunUI/ - 主库 target（99+ Swift 文件；每个文件自己写 import，不转出系统框架；第三方仅 Pow，限 CCButtons 与 Studio/CCAboutPage 的扫光）
+Sources/ChunUI/Core/ - 包门面（ChunUI.configure 配置入口/CCStrings 文案表/CCDesign 命名空间/Blur 渐进模糊）
 Sources/ChunUI/Theme/ - 设计令牌（CCColors.current 活体调色板 + Color.cc 访问器/CCFontFamily.current 宿主字族注入口（1.4.0，缺省系统字）/CCTypography 三梯度/CCTokens/CCMotion/CCModifiers 玻璃降级边界/CCSheetChrome/ViewFunc）
 Sources/ChunUI/Components/ - CC 组件族（按钮/表单/卡片/toast/沉底 alert/原生 sheet/骨架屏/相机/相册/浏览器等 40+ 件）
 Sources/ChunUI/Effects/ - 视觉特效（极光/生成中点阵/九分形地板/扫光/粒子消散/全息/元球/丝绸等）

@@ -1,5 +1,5 @@
 /**
- * [INPUT]: 依赖 Foundation 的字符串处理（经 Core/CCExports 转出，本文件不写 import）
+ * [INPUT]: 依赖 Foundation 的字符串处理
  * [OUTPUT]: 对外提供 MarkdownTextSegment（文本片段 + TextStyles 样式位）与 MarkdownTextRenderer（parse 解析）
  * [POS]: Markdown 的解析层；MarkdownText 组件只消费它的片段数组
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md

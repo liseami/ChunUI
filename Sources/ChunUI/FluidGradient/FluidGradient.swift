@@ -5,6 +5,8 @@
 //  Created by Oskar Groth on 2021-12-23.
 //
 
+import SwiftUI
+
  
 
 public struct FluidGradient: View {
