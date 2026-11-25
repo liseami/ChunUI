@@ -33,7 +33,7 @@ public final class CCStudioWorks: ObservableObject {
 
     private static let cacheKey = "cc.studio.works"
 
-    /// 中台信封只认 data.items：code 各 App 不同形（胃之书、阿奇、口袋粉丝是数字 200，哒啦啦是字符串 ok），HTTP 200 即成功
+    /// 中台信封只认 data.items：code 各 App 不同形（胃之书、阿奇、口袋粉丝是数字 200，扫猫是字符串 ok），HTTP 200 即成功
     private struct Envelope: Decodable {
         struct Payload: Decodable { let items: [CCWork] }
         let data: Payload?

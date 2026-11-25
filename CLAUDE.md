@@ -1,7 +1,7 @@
 # ChunUI - Monochrome 质感 SwiftUI 设计系统开源包
 Swift Package（swift-tools 6.2 · Swift 5 语言模式 + 默认 MainActor 隔离 + 渐进并发）+ iOS 18.6+ + 唯一依赖 Pow(MIT)
 定位：从 Zinner（阿奇）提取的可换肤设计系统——宿主只定义 CCColors 调色板即得同质感全家桶；所有 shader/点阵动效随包。
-位置：SideProject 单仓根 ChunUI/（2026-11-01 经 git subtree add 带完整历史并入），四个 App（胃之书、阿奇、哒啦啦、口袋粉丝）唯一的公共包；GitHub liseami/ChunUI 是镜像，也是四个 App 的远程 SPM 源：由单仓 `deploy/mirror.sh ChunUI release x.y.z` 快进 main 并打版本标签。
+位置：SideProject 单仓根 ChunUI/（2026-11-01 经 git subtree add 带完整历史并入），四个 App（胃之书、阿奇、口袋粉丝、扫猫 Purr；哒啦啦 2026-11-25 归档）唯一的公共包；GitHub liseami/ChunUI 是镜像，也是四个 App 的远程 SPM 源：由单仓 `deploy/mirror.sh ChunUI release x.y.z` 快进 main 并打版本标签。
 
 <directory>
 Sources/ChunUI/ - 主库 target（99+ Swift 文件；每个文件自己写 import，不转出系统框架；第三方仅 Pow，限 CCButtons 与 Studio/CCAboutPage 的扫光）
