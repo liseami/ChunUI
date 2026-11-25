@@ -1,9 +1,9 @@
-//
-//  MetaBallsBackground.swift
-//  YUI
-//
-//  Created by 赵纯想 on 2024/05/19.
-//
+/**
+ * [INPUT]: 依赖 SwiftUI、Color.cc 设计令牌、Core/CCComponentText（演示面板文案）
+ * [OUTPUT]: 对外提供 MetaBallsBackground（元球背景）与 MetaBallsDemo（调参演示面板）
+ * [POS]: Effects 的元球氛围层；演示面板的文字取自 Components 表
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 
 import SwiftUI
 
@@ -120,7 +120,7 @@ public struct MetaBallsDemo: View {
 
     public var body: some View {
         VStack {
-            Text("MetaBalls效果演示")
+            Text(CCComponentText.t("demo.metaballs.title"))
                 .ccText(font: .cc.title1Bold, color: .cc.background)
                 .padding()
                 .background(.ultraThinMaterial)
@@ -131,35 +131,35 @@ public struct MetaBallsDemo: View {
             // 控制面板
             VStack(spacing: 20) {
                 VStack(alignment: .leading) {
-                    Text("速度: \(speed, specifier: "%.1f")")
+                    Text(CCComponentText.f("demo.metaballs.speed", speed))
                         .ccText(font: .cc.callout, color: .cc.background)
                     Slider(value: $speed, in: 0.1...2.0)
                         .tint(Color.cc.background)
                 }
 
                 VStack(alignment: .leading) {
-                    Text("动画大小: \(Int(animationSize))")
+                    Text(CCComponentText.f("demo.metaballs.size", Int(animationSize)))
                         .ccText(font: .cc.callout, color: .cc.background)
                     Slider(value: $animationSize, in: 10...100)
                         .tint(Color.cc.background)
                 }
 
                 VStack(alignment: .leading) {
-                    Text("球体数量: \(Int(ballCount))")
+                    Text(CCComponentText.f("demo.metaballs.count", Int(ballCount)))
                         .ccText(font: .cc.callout, color: .cc.background)
                     Slider(value: $ballCount, in: 5...40)
                         .tint(Color.cc.background)
                 }
 
                 VStack(alignment: .leading) {
-                    Text("聚集因子: \(clumpFactor, specifier: "%.1f")")
+                    Text(CCComponentText.f("demo.metaballs.clump", clumpFactor))
                         .ccText(font: .cc.callout, color: .cc.background)
                     Slider(value: $clumpFactor, in: 0.1...2.0)
                         .tint(Color.cc.background)
                 }
 
                 HStack {
-                    Text("颜色:")
+                    Text(CCComponentText.t("demo.metaballs.color"))
                         .ccText(font: .cc.callout, color: .cc.background)
                     
                     ForEach(0..<colors.count, id: \.self) { index in

@@ -4,7 +4,7 @@
  * ║                         表单输入组件库                                      ║
  * ╚═══════════════════════════════════════════════════════════════════════════╝
  *
- * [INPUT]: CCDesignSystem 主题、SwiftUI
+ * [INPUT]: CCDesignSystem 主题、SwiftUI、Core/CCComponentText（日历表头与月份格式，Components 表二十语）
  * [OUTPUT]: CCInput, CCTextArea, CCToggle, CCCheckbox, CCDatePicker,
  *           CCTextField, CCNumberField, CCFormRow, CCEditLayout
  * [POS]: DesignSystem/Compents 表单组件，被编辑页面消费
@@ -331,7 +331,7 @@ public extension CCDesigin {
         @State private var currentMonth: Date = Date()
 
         private let calendar = Calendar.current
-        private let daysOfWeek = ["日", "一", "二", "三", "四", "五", "六"]
+        private let daysOfWeek = CCComponentText.t("datePicker.weekdays").components(separatedBy: ",")
 
         public var body: some View {
             VStack(spacing: 16) {
@@ -362,8 +362,8 @@ public extension CCDesigin {
 
                 // ━━━ 星期标题 ━━━
                 HStack(spacing: 0) {
-                    ForEach(daysOfWeek, id: \.self) { day in
-                        Text(day)
+                    ForEach(daysOfWeek.indices, id: \.self) { index in
+                        Text(daysOfWeek[index])
                             .ccText(font: .cc.footnote, color: .cc.mutedForeground)
                             .frame(width: FormTokens.dayCellSize, height: FormTokens.dayCellSize)
                     }
@@ -423,7 +423,7 @@ public extension CCDesigin {
         // ━━━ 辅助计算 ━━━
         private var monthYearString: String {
             let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy年M月"
+            formatter.dateFormat = CCComponentText.t("datePicker.monthFormat")
             return formatter.string(from: currentMonth)
         }
 

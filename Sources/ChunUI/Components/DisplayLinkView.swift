@@ -1,3 +1,9 @@
+/**
+ * [INPUT]: 依赖 QuartzCore 的 CADisplayLink、Core/CCComponentText（演示面板文案）
+ * [OUTPUT]: 对外提供 DisplayLinkManager（全局帧订阅）、DisplayLinkViewModifier / DisplayLinkView（按屏幕最高刷新率重绘）、RefreshRateMonitor（帧率读数）、DisplayLinkViewExample（演示）
+ * [POS]: Components 的帧同步原子；一个 CADisplayLink 服务全部订阅者
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
  
 import QuartzCore
 
@@ -102,9 +108,9 @@ public struct RefreshRateMonitor: View {
     
     public var body: some View {
         VStack {
-            Text("当前刷新率: \(Int(fps)) FPS")
+            Text(CCComponentText.f("demo.refreshRate.current", Int(fps)))
                 .ccText(font: .cc.caption, color: .cc.background)
-            Text("设备最大支持: \(maxFps) FPS")
+            Text(CCComponentText.f("demo.refreshRate.max", maxFps))
                 .ccText(font: .cc.caption, color: .cc.background)
         }
         .padding(8)
@@ -136,7 +142,7 @@ public struct DisplayLinkViewExample: View {
         ZStack {
             // 主内容
             VStack {
-                Text("高刷新率内容")
+                Text(CCComponentText.t("demo.refreshRate.content"))
                     .ccText(font: .cc.title1Bold, color: .cc.foreground)
                 
                 // 一些动画内容

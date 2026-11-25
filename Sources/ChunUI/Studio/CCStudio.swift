@@ -2,7 +2,7 @@
  * [INPUT]: 依赖 StoreKit 的 SKStoreProductViewController、UIKit 的 UIActivityViewController 与 UIApplication.open、
  *          Presentation 的 AppHelper.topMostViewController 与 CCNav.present（呈现出口）、Studio 的 CCLanguage（取词语言）与包内 Studio.xcstrings
  * [OUTPUT]: 对外提供 CCStudio（本 App 的工作室身份：App Store id、分享文案、作品目录地址、外链出口；评分与分享动作）、
- *           CCAppStore（应用内 App Store 页）、CCStudioText（工作室通用文案，二十种语言随包）
+ *           CCAppStore（应用内 App Store 页）、CCStudioText（工作室通用文案，二十种语言随包；包内 t(_:table:) 也替 Core/CCComponentText 取 Components 表）
  * [POS]: Studio 层的门面。四个 App 启动时各 configure 一次，设置页的信息组、更多组、其他作品组、语言与外观页都只读这里；
  *        工作室外链（开发者、小红书、X）只在这里写一次；configure 拿到作品目录地址即预取一次（四端同一时机，宿主不再各自预取）
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
@@ -100,10 +100,10 @@ public enum CCAppStore {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 public enum CCStudioText {
-    nonisolated static func t(_ key: String) -> String {
+    nonisolated static func t(_ key: String, table: String = "Studio") -> String {
         let bundle = CCLanguage.lproj(CCLanguageSnapshot.code, in: .module)
             ?? CCLanguage.lproj("en", in: .module) ?? .module
-        return bundle.localizedString(forKey: key, value: nil, table: "Studio")
+        return bundle.localizedString(forKey: key, value: nil, table: table)
     }
 
     // 分组名

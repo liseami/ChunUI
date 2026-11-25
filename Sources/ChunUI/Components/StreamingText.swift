@@ -104,6 +104,7 @@ typealias StreamingText = CCStreamingText
 // MARK: - Preview
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+#if DEBUG
 #Preview {
     StreamingTextPreview()
 }
@@ -146,3 +147,4 @@ private struct StreamingTextPreview: View {
         }
     }
 }
+#endif

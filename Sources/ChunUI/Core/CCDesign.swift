@@ -35,6 +35,7 @@ public enum CCDesigin {}
 // MARK: - Preview
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+#if DEBUG
 #Preview {
     ScrollView {
         VStack(spacing: 30) {
@@ -290,3 +291,4 @@ private struct FormComponentsPreview: View {
         }
     }
 }
+#endif

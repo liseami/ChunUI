@@ -481,6 +481,7 @@ public struct CCListRowPressStyle: ButtonStyle {
     }
 }
 
+#if DEBUG
 #Preview {
     VStack(spacing: 18) {
         CCNeoButton("和顾问聊聊 ta", variant: .primary, size: .large, icon: "sparkle-ai01", fullWidth: true) {}
@@ -508,3 +509,4 @@ private struct PreviewSegment: View {
         ])
     }
 }
+#endif

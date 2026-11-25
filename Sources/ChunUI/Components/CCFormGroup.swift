@@ -61,7 +61,7 @@ public struct CCFormStyle {
     }
 
     /// 旧入口：卡面已收归 CCFormCardSurface（四端唯一），宿主卡面被忽略；下一个主版本删除
-    @available(*, deprecated, message: "卡面四端唯一（CCFormCardSurface），不再接受宿主卡面；去掉 surface 参数")
+    @available(*, deprecated, message: "The card surface is unified in CCFormCardSurface; host surfaces are ignored. Drop the surface argument.")
     public init(rowFont: Font = .cc.base, captionFont: Font = .cc.sm, surface: @escaping () -> AnyView) {
         self.init(rowFont: rowFont, captionFont: captionFont)
     }
