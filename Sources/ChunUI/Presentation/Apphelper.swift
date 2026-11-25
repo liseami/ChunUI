@@ -461,21 +461,21 @@ public struct NotificationPreview: View {
 
 extension UIViewController {
     public func topMostViewController() -> UIViewController {
-        if self.presentedViewController == nil {
+        guard let presented = self.presentedViewController else {
             return self
         }
-        
-        if let navigation = self.presentedViewController as? UINavigationController {
-            return navigation.visibleViewController!.topMostViewController()
+
+        if let navigation = presented as? UINavigationController {
+            return (navigation.visibleViewController ?? navigation).topMostViewController()
         }
-        
-        if let tab = self.presentedViewController as? UITabBarController {
+
+        if let tab = presented as? UITabBarController {
             if let selectedTab = tab.selectedViewController {
                 return selectedTab.topMostViewController()
             }
             return tab.topMostViewController()
         }
-        
-        return self.presentedViewController!.topMostViewController()
+
+        return presented.topMostViewController()
     }
 }

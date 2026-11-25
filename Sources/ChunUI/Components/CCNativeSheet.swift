@@ -213,7 +213,7 @@ public final class CCNativeSheetController: UIViewController {
     private let config: CCSheetConfig
     private var onDismiss: (() -> Void)?
     private let hosting: UIViewController
-    private var binder: CCSheetDismissBinder!
+    private var binder: CCSheetDismissBinder?
 
     init<Content: View>(
         config: CCSheetConfig,

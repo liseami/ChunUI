@@ -16,10 +16,17 @@ import SwiftUI
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 public enum CCStudio {
+    private static func staticURL(_ raw: String) -> URL {
+        guard let url = URL(string: raw) else {
+            preconditionFailure("Invalid static URL: \(raw)")
+        }
+        return url
+    }
+
     /// 工作室外链：四个 App 的「更多」组同一份
-    public static let developerURL = URL(string: "https://chunxiang.ai")!
-    public static let xiaohongshuURL = URL(string: "https://xhslink.com/m/8E853wuYRZM")!
-    public static let xURL = URL(string: "https://x.com/chunxiangai")!
+    public static let developerURL = staticURL("https://chunxiang.ai")
+    public static let xiaohongshuURL = staticURL("https://xhslink.com/m/8E853wuYRZM")
+    public static let xURL = staticURL("https://x.com/chunxiangai")
 
     /// 本 App 的 App Store 数字 id（评分、分享兜底）
     public private(set) static var appStoreID = ""
@@ -43,7 +50,7 @@ public enum CCStudio {
     }
 
     public static var storeURL: URL {
-        URL(string: "https://apps.apple.com/app/id\(appStoreID)")!
+        URL(string: "https://apps.apple.com/app/id\(appStoreID)") ?? developerURL
     }
 
     /// 评分：直达 App Store 写评价页（系统评分弹窗有频控，用户主动点时可能不出）

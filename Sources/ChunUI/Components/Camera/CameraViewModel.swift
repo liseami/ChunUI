@@ -174,7 +174,11 @@ public final class CCCameraViewModel: NSObject, ObservableObject {
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
                 DispatchQueue.main.async {
-                    granted ? self?.configureSession() : (self?.permissionDenied = true)
+                    if granted {
+                        self?.configureSession()
+                    } else {
+                        self?.permissionDenied = true
+                    }
                 }
             }
         default:

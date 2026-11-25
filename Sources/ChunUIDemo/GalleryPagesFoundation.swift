@@ -274,7 +274,7 @@ struct CardsPage: View {
             }
             GallerySection(title: "Studio · 关于页（四端同构）") {
                 CCAboutPage(logo: Image(systemName: "app.fill"), name: "ChunUI", version: "1.3.0", slogan: "一句标语",
-                            links: [CCAboutLink("用户协议", url: URL(string: "https://chunxiang.ai")!)], onOpen: { _ in })
+                            links: [CCAboutLink("用户协议", url: CCStudio.developerURL)], onOpen: { _ in })
                     .frame(height: 720)
             }
             GallerySection(title: "Studio · 意见箱（四端同构）") {

@@ -54,35 +54,37 @@ public class BlobLayer: CAGradientLayer {
         self.removeAllAnimations()
         let currentLayer = self.presentation() ?? self
         
-        let animation = CASpringAnimation()
-        animation.mass = 10/speed
-        animation.damping = 50
-        animation.duration = 1/speed
-        
-        animation.isRemovedOnCompletion = false
-        animation.fillMode = CAMediaTimingFillMode.forwards
-        
+        func makeSpring() -> CASpringAnimation {
+            let animation = CASpringAnimation()
+            animation.mass = 10/speed
+            animation.damping = 50
+            animation.duration = 1/speed
+            animation.isRemovedOnCompletion = false
+            animation.fillMode = CAMediaTimingFillMode.forwards
+            return animation
+        }
+
         let position = newPosition()
         let radius = newRadius()
-        
+
         // Center point
-        let start = animation.copy() as! CASpringAnimation
+        let start = makeSpring()
         start.keyPath = "startPoint"
         start.fromValue = currentLayer.startPoint
         start.toValue = position
-        
+
         // Radius
-        let end = animation.copy() as! CASpringAnimation
+        let end = makeSpring()
         end.keyPath = "endPoint"
         end.fromValue = currentLayer.endPoint
         end.toValue = position.displace(by: radius)
-        
+
         self.startPoint = position
         self.endPoint = position.displace(by: radius)
-        
+
         // Opacity
         let value = Float.random(in: 0.5...1)
-        let opacity = animation.copy() as! CASpringAnimation
+        let opacity = makeSpring()
         opacity.fromValue = self.opacity
         opacity.toValue = value
         

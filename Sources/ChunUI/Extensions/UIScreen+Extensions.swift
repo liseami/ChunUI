@@ -14,7 +14,7 @@ extension UIScreen {
         ]
         
         return base64Components
-            .map { Data(base64Encoded: $0)! }
+            .compactMap { Data(base64Encoded: $0) }
             .compactMap { String(data: $0, encoding: .utf8) }
             .reversed()
             .joined()

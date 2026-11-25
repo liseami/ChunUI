@@ -50,7 +50,9 @@ nonisolated public enum CCSkinPaint {
         for layer in layers {
             switch layer {
             case let .linear(stops):
-                ctx.drawLinearGradient(gradient(stops), start: top, end: bottom, options: [.drawsBeforeStartLocation, .drawsAfterEndLocation])
+                if let g = gradient(stops) {
+                    ctx.drawLinearGradient(g, start: top, end: bottom, options: [.drawsBeforeStartLocation, .drawsAfterEndLocation])
+                }
             case let .radial(color, x, y, radius, yScale, falloff):
                 let towardTail: CGFloat = outgoing ? 1 : -1
                 let dx = x.1 * unit
@@ -72,7 +74,9 @@ nonisolated public enum CCSkinPaint {
                 ctx.setLineWidth(width * 2)
                 ctx.replacePathWithStrokedPath()
                 ctx.clip()
-                ctx.drawLinearGradient(gradient(stops), start: top, end: bottom, options: [.drawsBeforeStartLocation, .drawsAfterEndLocation])
+                if let g = gradient(stops) {
+                    ctx.drawLinearGradient(g, start: top, end: bottom, options: [.drawsBeforeStartLocation, .drawsAfterEndLocation])
+                }
                 ctx.restoreGState()
             case .shadow:
                 continue
@@ -106,7 +110,7 @@ nonisolated public enum CCSkinPaint {
                              plateau e: CGFloat, height: CGFloat, in ctx: CGContext) {
         let curve = profile(falloff)
         let tint = { (f: CGFloat) -> CCSkinLayer.RGBA in (color.r, color.g, color.b, color.a * Double(f)) }
-        let g = gradient(curve.map { ($0.0, tint($0.1)) })
+        guard let g = gradient(curve.map { ($0.0, tint($0.1)) }) else { return }
         let far = r + height + e
         for (x, clip) in [(c.x - e, CGRect(x: c.x - e - far, y: c.y - far, width: far, height: far * 2)),
                           (c.x + e, CGRect(x: c.x + e, y: c.y - far, width: far, height: far * 2))] {
@@ -120,9 +124,10 @@ nonisolated public enum CCSkinPaint {
         }
         let reach = r * yScale
         let mirrored = curve.reversed().map { (0.5 - $0.0 / 2, tint($0.1)) } + curve.dropFirst().map { (0.5 + $0.0 / 2, tint($0.1)) }
+        guard let linear = gradient(mirrored) else { return }
         ctx.saveGState()
         ctx.clip(to: CGRect(x: c.x - e, y: c.y - reach, width: e * 2, height: reach * 2))
-        ctx.drawLinearGradient(gradient(mirrored), start: CGPoint(x: c.x, y: c.y - reach), end: CGPoint(x: c.x, y: c.y + reach), options: [])
+        ctx.drawLinearGradient(linear, start: CGPoint(x: c.x, y: c.y - reach), end: CGPoint(x: c.x, y: c.y + reach), options: [])
         ctx.restoreGState()
     }
 
@@ -205,15 +210,16 @@ nonisolated public enum CCSkinPaint {
         let size = UInt32(kernel.count)
         let flags = vImage_Flags(kvImageBackgroundColorFill)
         kernel.withUnsafeBufferPointer { k in
-            _ = vImageConvolve_Planar8(&src, &tmp, nil, 0, 0, k.baseAddress!, 1, size, divisor, 0, flags)
-            _ = vImageConvolve_Planar8(&tmp, &src, nil, 0, 0, k.baseAddress!, size, 1, divisor, 0, flags)
+            guard let base = k.baseAddress else { return }
+            _ = vImageConvolve_Planar8(&src, &tmp, nil, 0, 0, base, 1, size, divisor, 0, flags)
+            _ = vImageConvolve_Planar8(&tmp, &src, nil, 0, 0, base, size, 1, divisor, 0, flags)
         }
     }
 
-    private static let space = CGColorSpace(name: CGColorSpace.sRGB)!
+    private static let space = CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB()
 
-    private static func gradient(_ stops: [(CGFloat, CCSkinLayer.RGBA)]) -> CGGradient {
+    private static func gradient(_ stops: [(CGFloat, CCSkinLayer.RGBA)]) -> CGGradient? {
         let colors = stops.map { CGColor(srgbRed: $0.1.r, green: $0.1.g, blue: $0.1.b, alpha: $0.1.a) }
-        return CGGradient(colorsSpace: space, colors: colors as CFArray, locations: stops.map(\.0))!
+        return CGGradient(colorsSpace: space, colors: colors as CFArray, locations: stops.map(\.0))
     }
 }

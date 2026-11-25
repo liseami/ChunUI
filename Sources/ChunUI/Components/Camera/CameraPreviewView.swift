@@ -27,15 +27,15 @@ public struct CameraPreviewLayer: UIViewRepresentable {
 
     public class PreviewUIView: UIView {
         var session: AVCaptureSession? {
-            didSet { previewLayer.session = session }
+            didSet { previewLayer?.session = session }
         }
 
         override public class var layerClass: AnyClass { AVCaptureVideoPreviewLayer.self }
-        var previewLayer: AVCaptureVideoPreviewLayer { layer as! AVCaptureVideoPreviewLayer }
+        var previewLayer: AVCaptureVideoPreviewLayer? { layer as? AVCaptureVideoPreviewLayer }
 
         override init(frame: CGRect) {
             super.init(frame: frame)
-            previewLayer.videoGravity = .resizeAspectFill
+            previewLayer?.videoGravity = .resizeAspectFill
             backgroundColor = .black
         }
 
@@ -43,7 +43,7 @@ public struct CameraPreviewLayer: UIViewRepresentable {
 
         override public func layoutSubviews() {
             super.layoutSubviews()
-            previewLayer.frame = bounds
+            previewLayer?.frame = bounds
         }
     }
 }

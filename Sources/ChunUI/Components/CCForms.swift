@@ -511,8 +511,8 @@ public extension CCDesigin {
                             isValid = validationType.validate(newValue)
                         }
 
-                    if !isValid && errorMessage != nil {
-                        Text(errorMessage!)
+                    if !isValid, let errorMessage {
+                        Text(errorMessage)
                             .ccText(font: .cc.footnote, color: .cc.destructive)
                     }
                 }
@@ -574,8 +574,8 @@ public extension CCDesigin {
                             isValid = validationType.validate(newValue)
                         }
 
-                    if !isValid && errorMessage != nil {
-                        Text(errorMessage!)
+                    if !isValid, let errorMessage {
+                        Text(errorMessage)
                             .ccText(font: .cc.footnote, color: .cc.destructive)
                     }
                 }

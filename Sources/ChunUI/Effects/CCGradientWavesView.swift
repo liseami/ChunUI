@@ -111,7 +111,7 @@ private final class WaveRenderer: NSObject, MTKViewDelegate {
         let descriptor = MTLRenderPipelineDescriptor()
         descriptor.vertexFunction = vertexFn
         descriptor.fragmentFunction = fragmentFn
-        let attachment = descriptor.colorAttachments[0]!
+        guard let attachment = descriptor.colorAttachments[0] else { return }
         attachment.pixelFormat = view.colorPixelFormat
         // 预乘 alpha：src.rgb 已乘 a，dst 乘 (1-a)
         attachment.isBlendingEnabled = true

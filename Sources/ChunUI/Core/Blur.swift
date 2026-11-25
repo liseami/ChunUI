@@ -60,11 +60,8 @@ open class VariableBlurUIView: UIVisualEffectView {
     public init(maxBlurRadius: CGFloat = 20, direction: VariableBlurDirection = .blurredTopClearBottom, startOffset: CGFloat = 0) {
         super.init(effect: UIBlurEffect(style: .regular))
 
-        guard let variableBlur = CCLayerFilter.make("variableBlur") else { return }
-
-        // The blur radius at each pixel depends on the alpha value of the corresponding pixel in the gradient mask.
-        // An alpha of 1 results in the max blur radius, while an alpha of 0 is completely unblurred.
-        let gradientImage = makeGradientImage(startOffset: startOffset, direction: direction)
+        guard let variableBlur = CCLayerFilter.make("variableBlur"),
+              let gradientImage = makeGradientImage(startOffset: startOffset, direction: direction) else { return }
 
         variableBlur.setValue(maxBlurRadius, forKey: "inputRadius")
         variableBlur.setValue(gradientImage, forKey: "inputMaskImage")
@@ -97,7 +94,7 @@ open class VariableBlurUIView: UIVisualEffectView {
         // `super.traitCollectionDidChange(previousTraitCollection)` crashes the app
     }
     
-    private func makeGradientImage(width: CGFloat = 100, height: CGFloat = 100, startOffset: CGFloat, direction: VariableBlurDirection) -> CGImage { // much lower resolution might be acceptable
+    private func makeGradientImage(width: CGFloat = 100, height: CGFloat = 100, startOffset: CGFloat, direction: VariableBlurDirection) -> CGImage? { // much lower resolution might be acceptable
         let ciGradientFilter =  CIFilter.linearGradient()
 //        let ciGradientFilter =  CIFilter.smoothLinearGradient()
         ciGradientFilter.color0 = CIColor.black
@@ -116,6 +113,7 @@ open class VariableBlurUIView: UIVisualEffectView {
             ciGradientFilter.point0 = CGPoint(x: 0, y: 0)
             ciGradientFilter.point1 = CGPoint(x: width - startOffset * width, y: 0)
         }
-        return CIContext().createCGImage(ciGradientFilter.outputImage!, from: CGRect(x: 0, y: 0, width: width, height: height))!
+        guard let outputImage = ciGradientFilter.outputImage else { return nil }
+        return CIContext().createCGImage(outputImage, from: CGRect(x: 0, y: 0, width: width, height: height))
     }
 }

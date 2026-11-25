@@ -28,7 +28,10 @@ public struct InAppBrowser: View {
     }
 
     public init(url: String) {
-        self.url = URL(string: url) ?? URL(string: "about:blank")!
+        guard let parsed = URL(string: url) ?? URL(string: "about:blank") else {
+            preconditionFailure("Failed to construct fallback about:blank URL")
+        }
+        self.url = parsed
     }
 
     public var body: some View {

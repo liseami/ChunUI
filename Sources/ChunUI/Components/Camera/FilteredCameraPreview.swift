@@ -54,8 +54,8 @@ public final class FilteredPreviewMTKView: MTKView {
     private var videoOutput: AVCaptureVideoDataOutput?
     private let videoQueue = DispatchQueue(label: "com.yui.camera.video", qos: .userInteractive)
 
-    private var ciContext: CIContext!
-    private var commandQueue: MTLCommandQueue!
+    private var ciContext: CIContext?
+    private var commandQueue: MTLCommandQueue?
     private var currentCIImage: CIImage?
     private let colorSpace = CGColorSpaceCreateDeviceRGB()
 
@@ -163,7 +163,9 @@ extension FilteredPreviewMTKView: AVCaptureVideoDataOutputSampleBufferDelegate {
         ciImage = ciImage.oriented(.right)
 
         // 应用滤镜
-        ciImage = currentFilter.apply(to: ciImage, context: ciContext)
+        if let ciContext {
+            ciImage = currentFilter.apply(to: ciImage, context: ciContext)
+        }
 
         // 线程安全更新
         currentCIImage = ciImage
@@ -183,7 +185,8 @@ extension FilteredPreviewMTKView: MTKViewDelegate {
     public func draw(in view: MTKView) {
         guard let ciImage = currentCIImage,
               let drawable = currentDrawable,
-              let commandBuffer = commandQueue.makeCommandBuffer()
+              let ciContext,
+              let commandBuffer = commandQueue?.makeCommandBuffer()
         else { return }
 
         let drawableSize = drawable.texture.width > 0 && drawable.texture.height > 0

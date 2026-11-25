@@ -23,8 +23,9 @@ extension String{
         
         for _ in 0..<finalLength {
             // 随机选择一个中文字符的Unicode值
-            let randomScalar = UnicodeScalar(Int.random(in: chineseStart...chineseEnd))!
-            result.append(Character(randomScalar))
+            if let randomScalar = UnicodeScalar(Int.random(in: chineseStart...chineseEnd)) {
+                result.append(Character(randomScalar))
+            }
         }
         
         return result
@@ -130,7 +131,7 @@ extension Date {
     /// 按 pattern 把 Date 格式化为字符串，缺省 ISO 风格微秒格式与 UTC 时区
     func toTimeZoneString(
         _ pattern: String = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS",
-        timeZone: TimeZone = TimeZone(secondsFromGMT: 0)!
+        timeZone: TimeZone = .gmt
     ) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = pattern

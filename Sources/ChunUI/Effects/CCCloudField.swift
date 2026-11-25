@@ -202,7 +202,7 @@ private final class CloudRenderer: NSObject, MTKViewDelegate {
         let descriptor = MTLRenderPipelineDescriptor()
         descriptor.vertexFunction = vertexFn
         descriptor.fragmentFunction = fragmentFn
-        let attachment = descriptor.colorAttachments[0]!
+        guard let attachment = descriptor.colorAttachments[0] else { return }
         attachment.pixelFormat = view.colorPixelFormat
         attachment.isBlendingEnabled = true
         attachment.sourceRGBBlendFactor = .one

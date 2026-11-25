@@ -59,18 +59,18 @@ private struct VideoPlayerView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: PlayerUIView, context: Context) {
-        uiView.playerLayer.player = player
+        uiView.playerLayer?.player = player
     }
 }
 
 private class PlayerUIView: UIView {
-    var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }
+    var playerLayer: AVPlayerLayer? { layer as? AVPlayerLayer }
 
     override class var layerClass: AnyClass { AVPlayerLayer.self }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        playerLayer.videoGravity = .resizeAspectFill
+        playerLayer?.videoGravity = .resizeAspectFill
     }
 
     required init?(coder: NSCoder) {
