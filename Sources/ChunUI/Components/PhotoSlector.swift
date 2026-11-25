@@ -1,9 +1,9 @@
-//
-//  ImagePicker.swift
-//  LifeLoop
-//
-//  Created by 赵翔宇 on 2022/12/8.
-//
+/**
+ * [INPUT]: 依赖 PhotosUI 的 PHPickerViewController、Photos 的 PHAsset 取拍摄日期、Core/CCLog 记载入失败
+ * [OUTPUT]: 对外提供 PhotoSelector / PhotoSelectorRepresentable（多选）、SinglePhotoSelector / SinglePhotoSelectorRepresentable（单选）、CCUIImage
+ * [POS]: Components 的系统相册选择器；单选记住上次选图的拍摄日期（CCPhotoSelectMemory）
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 
 import PhotosUI
 import SwiftUI
@@ -87,7 +87,7 @@ public struct PhotoSelectorRepresentable: UIViewControllerRepresentable {
                 // 异步加载选中的图片
                 result.itemProvider.loadObject(ofClass: UIImage.self) { image, error in
                     if let error = error {
-                        print("Error loading image: \(error.localizedDescription)") // 如果加载失败，则输出错误信息
+                        CCLog.error("Error loading image: \(error.localizedDescription)", category: "PhotoSelector")
                     } else if let image = image as? UIImage {
                         images.append(image) // 加载成功，将图片加入数组
                     }
@@ -176,7 +176,7 @@ public struct SinglePhotoSelectorRepresentable: UIViewControllerRepresentable {
             // 获取图片信息
             result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
                 if let error = error {
-                    print("照片加载错误: \(error.localizedDescription)")
+                    CCLog.error("Photo load failed: \(error.localizedDescription)", category: "PhotoSelector")
                     return
                 }
 
@@ -193,7 +193,7 @@ public struct SinglePhotoSelectorRepresentable: UIViewControllerRepresentable {
                                 CCPhotoSelectMemory.lastCreatedTime = createDate
                             })
                         }
-                        print("照片创建日期: \(asset.creationDate?.description ?? "未知")")
+                        CCLog.debug("Photo creation date: \(asset.creationDate?.description ?? "unknown")", category: "PhotoSelector")
                     }
                 }
 

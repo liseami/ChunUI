@@ -6,7 +6,7 @@
 //
 
 /**
- * [INPUT]: 无
+ * [INPUT]: 依赖 Core/CCLog（预览里关闭钮的调试日志）
  * [OUTPUT]: CCCamera 同款皮革背景 + 金属关闭按钮
  * [POS]: DesignSystem/Compents - 公用皮革风格组件
  *
@@ -128,7 +128,7 @@ extension View {
                 .ccText(font: .cc.title2Bold, color: .white)
 
             CCMetalCloseButton {
-                print("关闭")
+                CCLog.debug("Leather close tapped", category: "CCLeatherStyle")
             }
         }
     }

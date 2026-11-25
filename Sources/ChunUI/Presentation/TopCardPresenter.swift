@@ -1,3 +1,10 @@
+/**
+ * [INPUT]: 依赖 UIKit 的 UIWindow / UIHostingController、Core/CCLog 的分类 logger
+ * [OUTPUT]: 对外提供 TopCardPresenter.shared（presentCard / dismissCard / dismissAllCards）、DemoCardView、TopCardPreviewView
+ * [POS]: Presentation 的屏幕中央卡片呈现窗：每张卡一个独立 UIWindow，叠成栈；拖动越过阈值或点卡片 / 背景即关
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
+
 import SwiftUI
 import UIKit
 import OSLog
@@ -25,8 +32,8 @@ public final class TopCardPresenter : NSObject{
     /// 卡片堆栈
     private var cards: [CardData] = []
     
-    // 日志记录器
-    private let logger = Logger(subsystem: "com.cc.YUI", category: "TopCardPresenter")
+    // 日志记录器（经 Core/CCLog）
+    private let logger = CCLog.logger("TopCardPresenter")
     
     // MARK: - 初始化方法
     
@@ -34,13 +41,7 @@ public final class TopCardPresenter : NSObject{
     
     // MARK: - 公共方法
     
-    /// 在屏幕中央展示SwiftUI卡片
-    /// - Parameters:
-    ///   - view: 要展示的SwiftUI视图
-    ///   - animated: 是否使用动画效果，默认为true
-    ///   - backgroundColor: 背景颜色，默认为半透明黑色
-    ///   - isUserInteractionEnabled: 用户是否可以通过点击背景关闭卡片，默认为true
-    ///   - completion: 展示完成后的回调
+    /// 在独立窗口中央展示 SwiftUI 卡片；isUserInteractionEnabled 为 true 时点背景即关
     @MainActor
     public func presentCard<Content: View>(
         view: Content,
@@ -49,7 +50,7 @@ public final class TopCardPresenter : NSObject{
         isUserInteractionEnabled: Bool = true,
         completion: (() -> Void)? = nil
     ) {
-        logger.debug("开始展示卡片，当前卡片数量: \(self.cards.count)")
+        logger.debug("Presenting card, current count: \(self.cards.count)")
         
         // 将之前的所有卡片标记为非顶层
         for i in 0..<cards.count {
@@ -60,47 +61,47 @@ public final class TopCardPresenter : NSObject{
         
         let hostingController = UIHostingController(rootView: view)
         hostingController.view.backgroundColor = .clear
-        logger.debug("创建HostingController成功")
+        logger.debug("HostingController created")
         
         // 创建背景视图
         let bgView = UIView()
         bgView.backgroundColor = backgroundColor
         bgView.alpha = 0.3
-        logger.debug("创建背景视图成功，背景色: \(backgroundColor)")
+        logger.debug("Background view created, color: \(backgroundColor)")
         
         if isUserInteractionEnabled {
             let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backgroundTapped))
             bgView.addGestureRecognizer(tapGesture)
-            logger.debug("添加背景点击手势成功")
+            logger.debug("Background tap gesture added")
         }
         
         // 获取当前活跃的场景和窗口
         guard let windowScene = UIApplication.shared.connectedScenes
                 .filter({ $0.activationState == .foregroundActive })
                 .first as? UIWindowScene else {
-            logger.error("无法获取活跃的UIWindowScene")
+            logger.error("No active UIWindowScene")
             return
         }
         
-        logger.debug("获取到活跃的WindowScene: \(windowScene)")
+        logger.debug("Active WindowScene: \(windowScene)")
         
         // 创建新窗口，使用当前活跃的windowScene
         let window = UIWindow(windowScene: windowScene)
         window.windowLevel = .alert + 100 + CGFloat(cards.count) // 每个新卡片增加层级
         window.backgroundColor = .clear
-        logger.debug("创建窗口成功，windowLevel: \(window.windowLevel.rawValue)")
+        logger.debug("Window created, windowLevel: \(window.windowLevel.rawValue)")
         
         let containerVC = UIViewController()
         containerVC.view.backgroundColor = .clear
         window.rootViewController = containerVC
-        logger.debug("设置容器控制器成功")
+        logger.debug("Container controller set")
         
         // 添加背景视图和卡片视图
         containerVC.view.addSubview(bgView)
         containerVC.addChild(hostingController)
         containerVC.view.addSubview(hostingController.view)
         hostingController.didMove(toParent: containerVC)
-        logger.debug("添加子视图和控制器成功")
+        logger.debug("Subview and child controller added")
         
         // 配置布局
         bgView.frame = containerVC.view.bounds
@@ -112,7 +113,7 @@ public final class TopCardPresenter : NSObject{
             hostingController.view.widthAnchor.constraint(lessThanOrEqualTo: containerVC.view.widthAnchor, multiplier: 0.9),
             hostingController.view.heightAnchor.constraint(lessThanOrEqualTo: containerVC.view.heightAnchor, multiplier: 0.9)
         ])
-        logger.debug("设置约束成功")
+        logger.debug("Constraints set")
         
         // 添加手势识别器到卡片视图
         addGesturesToCardView(hostingController.view)
@@ -132,19 +133,19 @@ public final class TopCardPresenter : NSObject{
             isTopmost: true
         )
         cards.append(cardData)
-        logger.debug("将卡片添加到堆栈，当前卡片数量: \(self.cards.count)")
+        logger.debug("Card pushed to stack, current count: \(self.cards.count)")
         
         // 显示窗口
         window.isHidden = false
         window.makeKeyAndVisible()
-        logger.debug("窗口已设为可见：isHidden=\(window.isHidden), isKeyWindow=\(window.isKeyWindow)")
+        logger.debug("Window made visible: isHidden=\(window.isHidden), isKeyWindow=\(window.isKeyWindow)")
         
         // 应用动画
         if animated {
             hostingController.view.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
             hostingController.view.alpha = 0
             
-            logger.debug("开始执行展示动画")
+            logger.debug("Starting present animation")
             UIView.animate(
                 withDuration: 0.25,
                 delay: 0,
@@ -155,33 +156,30 @@ public final class TopCardPresenter : NSObject{
                     bgView.alpha = 1
                     hostingController.view.alpha = 1
                     hostingController.view.transform = CGAffineTransform(scaleX: 1.05, y: 1.05) // 过量变化
-                    self.logger.debug("展示动画执行中 - 第一阶段")
+                    self.logger.debug("Present animation - phase 1")
                 },
                 completion: { _ in
                     UIView.animate(withDuration: 0.15, animations: {
                         hostingController.view.transform = .identity // 恢复正常大小
-                        self.logger.debug("展示动画执行中 - 第二阶段")
+                        self.logger.debug("Present animation - phase 2")
                     }, completion: { _ in
-                        self.logger.debug("展示动画完成")
+                        self.logger.debug("Present animation finished")
                         completion?()
                     })
                 }
             )
         } else {
             bgView.alpha = 1
-            logger.debug("不使用动画，直接显示")
+            logger.debug("Presenting without animation")
             completion?()
         }
     }
     
-    /// 关闭当前展示的卡片
-    /// - Parameters:
-    ///   - animated: 是否使用动画效果，默认为true
-    ///   - completion: 关闭完成后的回调
+    /// 关闭最顶层卡片；栈空时直接回调 completion
     @MainActor
     public func dismissCard(animated: Bool = true, completion: (() -> Void)? = nil) {
         guard !cards.isEmpty else {
-            logger.warning("没有找到当前展示的卡片，可能已被关闭")
+            logger.warning("No presented card found, it may already be dismissed")
             completion?()
             return
         }
@@ -189,17 +187,13 @@ public final class TopCardPresenter : NSObject{
         dismissCard(at: cards.count - 1, animated: animated, completion: completion)
     }
     
-    /// 关闭指定索引的卡片
-    /// - Parameters:
-    ///   - index: 要关闭的卡片索引
-    ///   - animated: 是否使用动画效果
-    ///   - completion: 关闭完成后的回调
+    /// 关闭指定索引的卡片；索引无效时只记日志并回调 completion
     @MainActor
     public func dismissCard(at index: Int, animated: Bool = true, completion: (() -> Void)? = nil) {
-        logger.debug("准备关闭索引为 \(index) 的卡片")
+        logger.debug("Dismissing card at index \(index)")
         
         guard index >= 0 && index < cards.count else {
-            logger.warning("无效的卡片索引: \(index)")
+            logger.warning("Invalid card index: \(index)")
             completion?()
             return
         }
@@ -207,14 +201,14 @@ public final class TopCardPresenter : NSObject{
         let cardData = cards[index]
         
         if animated {
-            logger.debug("开始执行关闭动画")
+            logger.debug("Starting dismiss animation")
             UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseIn, animations: {
                 cardData.backgroundView.alpha = 0
                 cardData.cardView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
                 cardData.cardView.alpha = 0
-                self.logger.debug("关闭动画执行中")
+                self.logger.debug("Dismiss animation running")
             }, completion: { _ in
-                self.logger.debug("关闭动画完成")
+                self.logger.debug("Dismiss animation finished")
                 self.cleanupCard(at: index)
                 
                 // 如果还有卡片，将最上层的卡片标记为顶层
@@ -227,7 +221,7 @@ public final class TopCardPresenter : NSObject{
                 completion?()
             })
         } else {
-            logger.debug("不使用动画，直接关闭")
+            logger.debug("Dismissing without animation")
             cleanupCard(at: index)
             
             // 如果还有卡片，将最上层的卡片标记为顶层
@@ -241,14 +235,11 @@ public final class TopCardPresenter : NSObject{
         }
     }
     
-    /// 关闭所有卡片
-    /// - Parameters:
-    ///   - animated: 是否使用动画效果
-    ///   - completion: 关闭完成后的回调
+    /// 关闭全部卡片，全部关完再回调 completion
     @MainActor
     public func dismissAllCards(animated: Bool = true, completion: (() -> Void)? = nil) {
         guard !cards.isEmpty else {
-            logger.warning("没有卡片需要关闭")
+            logger.warning("No card to dismiss")
             completion?()
             return
         }
@@ -264,7 +255,7 @@ public final class TopCardPresenter : NSObject{
         }
         
         group.notify(queue: .main) {
-            self.logger.debug("所有卡片已关闭")
+            self.logger.debug("All cards dismissed")
             completion?()
         }
     }
@@ -285,7 +276,7 @@ public final class TopCardPresenter : NSObject{
         tapGesture.delegate = self
         view.addGestureRecognizer(tapGesture)
         
-        logger.debug("已添加拖动和点击手势到卡片视图")
+        logger.debug("Pan and tap gestures added to card view")
     }
     
     @objc @MainActor private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
@@ -303,7 +294,7 @@ public final class TopCardPresenter : NSObject{
         switch gesture.state {
         case .began:
             // 记录开始拖动
-            logger.debug("开始拖动卡片，索引: \(cardIndex)")
+            logger.debug("Card drag began, index: \(cardIndex)")
             // 重置手势的初始平移量，确保每次新的拖动从零开始计算
             gesture.setTranslation(.zero, in: cardView.superview)
             
@@ -341,7 +332,7 @@ public final class TopCardPresenter : NSObject{
                 }, completion: { _ in
                     self.dismissCard(at: cardIndex, animated: false)
                 })
-                logger.debug("松手时满足关闭条件，卡片淡出消失")
+                logger.debug("Drag ended past threshold, fading card out")
             } else {
                 // 否则，恢复卡片位置
                 UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.2, options: .curveEaseOut, animations: {
@@ -349,7 +340,7 @@ public final class TopCardPresenter : NSObject{
                     cardView.transform = .identity
                     cardData.backgroundView.alpha = 1.0
                 }, completion: nil)
-                logger.debug("松手时未满足关闭条件，恢复卡片位置")
+                logger.debug("Drag ended below threshold, restoring card position")
             }
             
         default:
@@ -366,7 +357,7 @@ public final class TopCardPresenter : NSObject{
             return
         }
 
-        logger.debug("卡片被点击，准备关闭")
+        logger.debug("Card tapped, dismissing")
         dismissCard(at: cardIndex)
     }
     
@@ -374,17 +365,17 @@ public final class TopCardPresenter : NSObject{
         // 只关闭最顶层的卡片
         guard !cards.isEmpty else { return }
         
-        logger.debug("背景被点击，准备关闭卡片")
+        logger.debug("Background tapped, dismissing card")
         dismissCard()
     }
     
     private func cleanupCard(at index: Int) {
         guard index >= 0 && index < cards.count else {
-            logger.warning("尝试清理无效索引的卡片: \(index)")
+            logger.warning("Cleanup skipped, invalid card index: \(index)")
             return
         }
         
-        logger.debug("开始清理索引为 \(index) 的卡片资源")
+        logger.debug("Cleaning up card at index \(index)")
         
         let cardData = cards[index]
         
@@ -395,11 +386,11 @@ public final class TopCardPresenter : NSObject{
             cardData.viewController.view.removeFromSuperview()
             cardData.viewController.removeFromParent()
         }
-        logger.debug("移除了卡片控制器")
+        logger.debug("Card controller removed")
         
         cardData.backgroundView.removeFromSuperview()
         cardData.window.isHidden = true
-        logger.debug("隐藏窗口并移除背景视图")
+        logger.debug("Window hidden, background view removed")
         
         // 从数组中移除卡片数据
         cards.remove(at: index)
@@ -410,12 +401,12 @@ public final class TopCardPresenter : NSObject{
     }
     
     private func printWindowsInfo() {
-        logger.debug("打印所有窗口信息:")
+        logger.debug("Dumping all windows:")
         UIApplication.shared.connectedScenes.forEach { scene in
             if let windowScene = scene as? UIWindowScene {
-                logger.debug("场景: \(windowScene), 激活状态: \(windowScene.activationState.rawValue)")
+                logger.debug("Scene: \(windowScene), activationState: \(windowScene.activationState.rawValue)")
                 windowScene.windows.forEach { window in
-                    logger.debug("窗口: \(window), 层级: \(window.windowLevel.rawValue), 可见: \(window.isHidden ? "否" : "是"), isKey: \(window.isKeyWindow ? "是" : "否")")
+                    logger.debug("Window: \(window), level: \(window.windowLevel.rawValue), visible: \(window.isHidden ? "no" : "yes"), isKey: \(window.isKeyWindow ? "yes" : "no")")
                 }
             }
         }

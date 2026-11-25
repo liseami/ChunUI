@@ -1,5 +1,5 @@
 /**
- * [INPUT]: 依赖 Shaders/CCCloudField.metal 的 ccCloudFieldVertex/Fragment 经典管线（Bundle.module metallib）、MetalKit MTKView、ccAtmospherePaused（侧边栏跟手时宿主暂停）
+ * [INPUT]: 依赖 Shaders/CCCloudField.metal 的 ccCloudFieldVertex/Fragment 经典管线（Bundle.module metallib）、MetalKit MTKView、ccAtmospherePaused（侧边栏跟手时宿主暂停）、Core/CCLog（DEBUG 报管线装配失败）
  * [OUTPUT]: 对外提供 CCCloudField——Cromma 体积云独立 IsolatedCloudMTKView（30fps、原生 DPR；Equatable 按 pause；离窗 / 氛围暂停才停）；点阵/极光在 CCSkyHeroCard
  * [POS]: Effects 的体积云氛围层。只画云。形态表与 cromma-cloud/layouts 同构，步进改连续时间
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
@@ -195,7 +195,7 @@ private final class CloudRenderer: NSObject, MTKViewDelegate {
               let fragmentFn = library.makeFunction(name: "ccCloudFieldFragment")
         else {
             #if DEBUG
-            print("[CloudField] 管线装配失败：Bundle.module metallib 缺 ccCloudFieldVertex/Fragment")
+            CCLog.error("Pipeline setup failed: Bundle.module metallib lacks ccCloudFieldVertex/Fragment", category: "CloudField")
             #endif
             return
         }
@@ -214,7 +214,7 @@ private final class CloudRenderer: NSObject, MTKViewDelegate {
             queue = device.makeCommandQueue()
         } catch {
             #if DEBUG
-            print("[CloudField] makeRenderPipelineState 失败：\(error)")
+            CCLog.error("makeRenderPipelineState failed: \(error)", category: "CloudField")
             #endif
         }
     }

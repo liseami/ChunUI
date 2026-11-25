@@ -1,5 +1,5 @@
 /**
- * [INPUT]: 依赖 Shaders/CCGradientWaves.metal 的 ccGradientWavesVertex/Fragment 经典管线（Bundle.module metallib）、MetalKit MTKView、Color.cc 主题轴（toRGB 灌色）、Reduce Motion
+ * [INPUT]: 依赖 Shaders/CCGradientWaves.metal 的 ccGradientWavesVertex/Fragment 经典管线（Bundle.module metallib）、MetalKit MTKView、Color.cc 主题轴（toRGB 灌色）、Reduce Motion、Core/CCLog（DEBUG 报管线装配失败）
  * [OUTPUT]: 对外提供 CCGradientWavesView——倒挂等离子体海面（MTKView 真管线 30fps）；speech 0…1 发言能量经渲染器攻快衰慢平滑，驱动振幅/湍流/相机微抖
  * [POS]: Effects 的发言涟漪氛围层（宿主 Onboarding Hi 场景铺底）；不拦截点击；stitchable 已废——管线建不起来时 DEBUG 控制台报错，不再静默隐身
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
@@ -104,7 +104,7 @@ private final class WaveRenderer: NSObject, MTKViewDelegate {
               let fragmentFn = library.makeFunction(name: "ccGradientWavesFragment")
         else {
             #if DEBUG
-            print("[GradientWaves] 管线装配失败：Bundle.module metallib 缺 ccGradientWavesVertex/Fragment")
+            CCLog.error("Pipeline setup failed: Bundle.module metallib lacks ccGradientWavesVertex/Fragment", category: "GradientWaves")
             #endif
             return
         }
@@ -124,7 +124,7 @@ private final class WaveRenderer: NSObject, MTKViewDelegate {
             queue = device.makeCommandQueue()
         } catch {
             #if DEBUG
-            print("[GradientWaves] makeRenderPipelineState 失败：\(error)")
+            CCLog.error("makeRenderPipelineState failed: \(error)", category: "GradientWaves")
             #endif
         }
     }
