@@ -301,8 +301,7 @@ nonisolated public extension Color {
         #endif
     }
 
-    /// 转换为 RGB SIMD 向量（用于 Metal 着色器）；纯值换算，
-    /// nonisolated 供 visualEffect/shader 非隔离闭包直取（模块默认 MainActor 隔离）
+    /// 纯值换算成 RGB SIMD（喂 Metal 着色器）；nonisolated 供 visualEffect / shader 的非隔离闭包直取（模块默认 MainActor）
     nonisolated func toRGB() -> SIMD3<Float> {
         #if canImport(UIKit)
         let uiColor = UIColor(self)

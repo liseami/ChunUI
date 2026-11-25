@@ -50,9 +50,7 @@ public final class CCLanguage: ObservableObject {
         load()
     }
 
-    /// 宿主启动时调用一次（在任何界面出现之前）：
-    /// - storageKey：沿用旧版本存所选语言的键，老用户的选择不丢
-    /// - supported：可选语言；缺省取 App 包里的 lproj（不含 Base）。文案不在 lproj 里的宿主（如生成的 L.*）显式传
+    /// 宿主启动时、任何界面出现前调用一次；storageKey 沿用旧版存语言的键，supported 缺省取包里的 lproj（不含 Base），文案不在 lproj 的宿主（如生成的 L.*）显式传
     public func configure(storageKey: String? = nil, supported: [String]? = nil) {
         if let storageKey { self.storageKey = storageKey }
         if let supported, !supported.isEmpty { available = supported }

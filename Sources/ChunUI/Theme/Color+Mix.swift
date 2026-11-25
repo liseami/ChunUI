@@ -20,22 +20,7 @@ import UIKit
 
 extension Color {
 
-    /// 混合两个颜色（线性插值）
-    ///
-    /// 用于微拟物效果中的渐变、高光、阴影计算
-    ///
-    /// ```swift
-    /// // 创建 15% 黑色混合（暗边效果）
-    /// baseColor.mix(with: .black, amount: 0.15)
-    ///
-    /// // 创建 20% 白色混合（高光效果）
-    /// baseColor.mix(with: .white, amount: 0.20)
-    /// ```
-    ///
-    /// - Parameters:
-    ///   - color: 要混入的颜色
-    ///   - amount: 混合比例 (0.0 = 纯 self, 1.0 = 纯 color)
-    /// - Returns: 混合后的颜色
+    /// 两色线性插值：amount 0 为纯 self、1 为纯 color；微拟物的暗边（混黑 0.15）与高光（混白 0.20）都用它
     public func mix(with color: Color, amount: Double) -> Color {
         let c1 = UIColor(self)
         let c2 = UIColor(color)

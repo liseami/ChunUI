@@ -620,8 +620,7 @@ public extension CCDesigin {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 extension View {
-    /// 为视图添加左下角返回按钮
-    /// - Parameter action: 自定义返回动作，nil 时使用默认 pop
+    /// 为视图添加左下角返回按钮；action 为 nil 时走默认 pop
     func withBackButton(action: (() -> Void)? = nil) -> some View {
         self.overlay(alignment: .bottomLeading) {
             CCDesigin.CircularBackButton(autoLayout: false, action: action)

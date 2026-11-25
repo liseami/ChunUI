@@ -22,8 +22,7 @@ public enum MediaPickLimit {
 }
 
 extension AppHelper {
-    /// 命令式弹出系统 PHPicker（图/视频）；结果解码为 PickedMedia 后回调主线程
-    /// - Parameter showsUploadToast: 选完立刻上传时 true——点确认即 begin 进度胶囊，解码不再挡 toast
+    /// 命令式弹出系统 PHPicker（图/视频），结果解码为 PickedMedia 后回主线程；showsUploadToast 为 true 时点确认即起进度胶囊
     public func presentPHPicker(
         selectionLimit: Int,
         filter: PHPickerFilter = .any(of: [.images, .videos]),

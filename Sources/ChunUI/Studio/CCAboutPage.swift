@@ -36,8 +36,7 @@ public struct CCAboutLink: Identifiable, Sendable {
         self.url = url
     }
 
-    /// 宿主文案表里的 Markdown 法律链接（如「[用户协议](https://…) ｜ [隐私政策](https://…)」）拆成链接项；
-    /// 只取带链接的片段，分隔符由本页统一画
+    /// 把宿主的 Markdown 法律链接（「[用户协议](…) ｜ [隐私政策](…)」）拆成链接项；只取带链接的片段，分隔符由本页统一画
     public static func links(markdown: String) -> [CCAboutLink] {
         guard let text = try? AttributedString(markdown: markdown) else { return [] }
         return text.runs.compactMap { run in
@@ -58,10 +57,7 @@ public struct CCAboutPage: View {
 
     @State private var show = false
 
-    /// - Parameters:
-    ///   - logo: 宿主的 App 图标（方图，页内裁圆角 32）
-    ///   - links: 底部法律链接（用户协议、隐私政策…），以「｜」相隔
-    ///   - onOpen: 点链接时由宿主打开（应用内浏览器 sheet 等）
+    /// logo 为宿主方图（页内裁圆角 32）；links 为底部法律链接，以「｜」相隔；onOpen 由宿主打开链接（如应用内浏览器 sheet）
     public init(logo: Image, name: String, version: String, slogan: String, links: [CCAboutLink], onOpen: @escaping (URL) -> Void) {
         self.logo = logo
         self.name = name

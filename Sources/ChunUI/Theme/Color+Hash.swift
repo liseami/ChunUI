@@ -25,14 +25,7 @@ import SwiftUI
 
 extension Color {
 
-    /// 基于字符串生成稳定的设计系统颜色
-    /// - Parameter string: 输入字符串（如菜系名称）
-    /// - Returns: HSB 色彩空间中的颜色，色相由 hash 决定
-    ///
-    /// 算法原理：
-    /// 1. 使用 DJB2 变体哈希算法，稳定且分布均匀
-    /// 2. 取模 360 得到色相角度
-    /// 3. 固定饱和度 0.65、亮度 0.75 确保视觉协调
+    /// 字符串经 DJB2 变体哈希取模 360 得色相，固定饱和度 0.65、亮度 0.75，生成稳定的设计系统色
     static func fromStringHash(_ string: String) -> Color {
         // DJB2 变体哈希：hash = ((hash << 5) + hash) + char
         var hash: UInt64 = 5381
@@ -50,10 +43,7 @@ extension Color {
         return Color(hue: hue, saturation: saturation, brightness: brightness)
     }
 
-    /// 生成一组互补色（用于图例等场景）
-    /// - Parameters:
-    ///   - strings: 字符串数组
-    /// - Returns: 颜色数组，与输入一一对应
+    /// 为一组字符串逐一生成颜色（图例用），与输入一一对应
     static func colorsFromStrings(_ strings: [String]) -> [Color] {
         strings.map { fromStringHash($0) }
     }

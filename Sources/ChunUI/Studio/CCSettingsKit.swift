@@ -166,8 +166,7 @@ public struct CCWorksGroup: View {
         .task { await studio.refresh() }
     }
 
-    /// 走包内唯一远程图件 CCWebImage：宿主注入的加载器（胃之书、阿奇为 Kingfisher）或内建 URLCache 加载器，带缓存与重试。
-    /// 不用 AsyncImage：它无缓存、不重试，加载中父视图一刷新即被取消，停在失败态永远是灰块
+    /// 走包内唯一远程图件 CCWebImage（宿主加载器或内建 URLCache，带缓存与重试）；不用 AsyncImage：它无缓存、不重试，父视图一刷新即取消、停在灰块
     private func artwork(_ work: CCWork) -> some View {
         CCDesigin.CCWebImage(str: work.iconURL)
             .scaledToFill()

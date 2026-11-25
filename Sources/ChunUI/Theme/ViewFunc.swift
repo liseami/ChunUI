@@ -1,9 +1,9 @@
-//
-//  ViewFunc.swift
-//  YUI
-//
-//  Created by 赵翔宇 on 2025/2/17.
-//
+/**
+ * [INPUT]: 依赖 SwiftUI 的 PreferenceKey / ViewModifier 与 Theme 的 CC 字体、语义色
+ * [OUTPUT]: 对外提供 ccText / ccNumber 文字速写、if / when 条件修饰、占位与静态视图、键盘与延时呈现（AutoOpenKeyed、ShowAfterSecs）、getViewHeight（ViewHeightPreferenceKey）、equatable(by:) 局部等价渲染
+ * [POS]: Theme 的视图修饰速写；组件与宿主页面都直接调用
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 
 import Foundation
 import SwiftUI
@@ -23,66 +23,26 @@ public struct ViewHeightPreferenceKey: PreferenceKey {
 extension View {
     // MARK: - 文字样式
 
-    /// 快速应用 CC 设计系统的文字样式
-    /// 此方法将同时设置字体和颜色，使文字风格统一
-    ///
-    /// - Parameters:
-    ///   - font: CCFont 中定义的字体
-    ///   - color: CC 设计系统中定义的语义色
-    ///
-    /// 使用示例：
-    /// ```
-    /// Text("标题文本")
-    ///     .ccText(font: .cc.hero, color: .cc.foreground)
-    ///
-    /// Text("次要文本")
-    ///     .ccText(font: .cc.callout, color: .cc.mutedForeground)
-    /// ```
+    /// 一次设好 CC 字体与语义色：Text("标题").ccText(font: .cc.hero, color: .cc.foreground)
     public func ccText(font: Font, color: Color) -> some View {
         self.font(font).foregroundStyle(color)
     }
 
-    /// ccText 渐变重载 - 支持 LinearGradient 等 ShapeStyle
-    ///
-    /// - Parameters:
-    ///   - font: 字体
-    ///   - style: 任意 ShapeStyle (LinearGradient, AngularGradient 等)
-    ///
-    /// 使用示例：
-    /// ```
-    /// Text("$99")
-    ///     .ccText(font: .cc.hero, style: goldGradient)
-    /// ```
+    /// ccText 的渐变重载：style 接任意 ShapeStyle（LinearGradient、AngularGradient 等）
     public func ccText<S: ShapeStyle>(font: Font, style: S) -> some View {
         self.font(font).foregroundStyle(style)
     }
 
     // MARK: - 数字样式
 
-    /// 快速应用 CC 设计系统的数字样式（系统等宽字体）
-    /// 专用于：统计数据、价格、计数、百分比等数字展示
-    ///
-    /// - Parameters:
-    ///   - size: 字号 (常用尺寸: 28/24/20/18/16/14/12)
-    ///   - color: CC 设计系统中定义的语义色
-    ///
-    /// 使用示例：
-    /// ```
-    /// Text("1,234")
-    ///     .ccNumber(size: 20, color: .cc.foreground)
-    ///
-    /// Text("99%")
-    ///     .ccNumber(size: 16, color: .cc.primary)
-    /// ```
+    /// 数字样式（系统等宽字）：统计、价格、计数、百分比；常用字号 28/24/20/18/16/14/12
     public func ccNumber(size: CGFloat, color: Color) -> some View {
         self.font(.cc.mono(size)).foregroundStyle(color)
     }
 
     // MARK: - 条件渲染
 
-    /// 根据条件决定是否显示视图
-    /// - Parameter show: 控制视图是否显示的布尔值
-    /// - Returns: 如果 show 为 true 则显示视图，否则显示 EmptyView
+    /// show 为 true 时显示自身，否则换成 EmptyView
     public func `if`(_ show: Bool) -> some View {
         Group {
             if show {
@@ -93,11 +53,7 @@ extension View {
         }
     }
 
-    /// 条件变换：满足条件时应用 transform，否则保持原样
-    /// - Parameters:
-    ///   - condition: 控制是否应用变换的条件
-    ///   - transform: 满足条件时对视图应用的变换
-    /// - Returns: 变换后的视图或原视图
+    /// 条件变换：condition 为 true 时套用 transform，否则原样返回
     @ViewBuilder
     public func when<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
         if condition {
@@ -109,9 +65,7 @@ extension View {
 
     // MARK: - 占位效果
 
-    /// 为视图添加占位效果
-    /// 包括红色遮罩和闪烁动画效果
-    /// - Returns: 带有占位效果的视图
+    /// 占位效果：红色遮罩加闪烁动画
     public func isPlaceholder(_ show: Bool = true) -> some View {
         Group {
             if show {
@@ -126,8 +80,7 @@ extension View {
 
     // MARK: - 键盘控制
 
-    /// 自动打开键盘
-    /// - Returns: 自动打开键盘的视图
+    /// 出现时自动唤起键盘
     public func autoOpenKeyboard() -> some View {
         self.modifier(AutoOpenKeyed())
     }
@@ -140,20 +93,14 @@ extension View {
 
     // MARK: - 延迟显示
 
-    /// 延迟显示视图
-    /// - Parameters:
-    ///   - sec: 延迟显示的秒数
-    ///   - transition: 显示时的过渡动画，默认为淡入效果
-    /// - Returns: 延迟显示的视图
+    /// 延迟 sec 秒再显示，transition 缺省淡入
     public func showAfter(_ sec: Double, transition: AnyTransition = .opacity) -> some View {
         self.modifier(ShowAfterSecs(sec: sec, transition: transition))
     }
 
     // MARK: - 静态视图
 
-    /// 将视图设置为静态视图
-    /// 禁用交互并优化性能
-    /// - Returns: 静态视图
+    /// 设为静态视图：禁用交互并优化性能
     public func isStaticView() -> some View {
         return self.equatable(by: true)
             .allowsHitTesting(false)
@@ -161,11 +108,7 @@ extension View {
 
     // MARK: - 文本标签
 
-    /// 将视图转换为文本标签样式
-    /// - Parameters:
-    ///   - textcolor: 文本颜色
-    ///   - backColor: 背景颜色
-    /// - Returns: 标签样式的视图
+    /// 转成文本标签样式：textcolor 为字色，backColor 为底色
     public func isTextTag(_ textcolor: Color, backColor: Color) -> some View {
         self
             .ccText(font: .cc.captionBold , color: textcolor)
@@ -175,10 +118,7 @@ extension View {
             .clipShape(RoundedRectangle(cornerRadius: 4))
     }
 
-    /// 获取视图的实际高度并执行回调
-    /// 使用 PreferenceKey 系统进行高效的高度测量
-    /// - Parameter completion: 高度变化时的回调闭包
-    /// - Returns: 带有高度测量功能的视图
+    /// 经 PreferenceKey 量出视图实际高度，高度变化时回调 completion
     public func getViewHeight(_ completion: @MainActor @escaping (CGFloat) -> Void) -> some View {
         self
             .background(

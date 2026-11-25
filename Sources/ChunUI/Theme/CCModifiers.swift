@@ -294,9 +294,7 @@ public extension View {
             .shadow(color: Color.cc.shadow.opacity(0.12), radius: 16, y: 8)
     }
 
-    /// 极简分组卡片 (设置页 / 信息页通用)
-    /// card 底色用 shaped background（不 clip 内容），避免行内 CCCuteTag / 键帽阴影被父容器裁切
-    /// - Parameter radius: 圆角 (默认 .cc.radiusCard = 16)
+    /// 极简分组卡片（设置页 / 信息页）；底色用 shaped background 不 clip 内容，免得行内 CCCuteTag 与键帽阴影被裁；radius 缺省 .cc.radiusCard（16）
     public func ccGroupCard(radius: CGFloat = .cc.radiusCard) -> some View {
         self
             .background {

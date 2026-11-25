@@ -51,8 +51,7 @@ public final class AppHelper {
         UserDefaults.standard.set(true, forKey: scenario.rawValue)
     }
 
-    /// 根据场景请求应用评分（仅首次触发）
-    /// - Parameter scenario: 触发评分的场景
+    /// 按场景请求应用评分，每个场景只触发一次
     @MainActor
     public func requestReviewIfNeeded(for scenario: ReviewScenario) {
         guard !hasRequestedReview(for: scenario) else { return }
@@ -114,10 +113,7 @@ public final class AppHelper {
     
     // MARK: - 触觉反馈方法
     
-    /// 根据指定的样式生成触觉反馈
-    ///
-    /// - Parameter style: 要生成的触觉反馈样式
-    /// - Note: 该方法内部处理不同类型的触觉反馈生成器
+    /// 按样式生成触觉反馈，内部按类型选用不同的反馈生成器
     public func mada(_ style: HapticFeedbackStyle) {
         guard ChunUI.hapticsEnabled else { return }
 
@@ -187,13 +183,7 @@ public final class AppHelper {
         }
     }
     
-    /// 显示沉底自定义 Alert（Twitter 风；全应用唯一出口 → CCAlertCenter）
-    ///
-    /// - Parameters:
-    ///   - title: 标题
-    ///   - message: 说明（可空）
-    ///   - actions: 底栏按钮，从左到右排布（通常左 destructive / 右 default）
-    ///   - sourceView / sourceRect: 旧 UIAlert 兼容参数，已忽略
+    /// 显示沉底自定义 Alert（全应用唯一出口 → CCAlertCenter）；actions 从左到右排布，sourceView / sourceRect 是旧 UIAlert 兼容参数，已忽略
     @MainActor
     public func showAlert(
         title: String,
@@ -250,12 +240,8 @@ public final class AppHelper {
         case loading(message: String)
     }
     
-    /*
-     弹出小提示
-     */
+    /// 全应用消息 toast 唯一出口：路由到自研 CCToastCenter（CCToastWindow 置顶窗口），一级页（tabbar 在场）走阿奇头像气泡，其余走顶部胶囊
     @MainActor
-    /// 全应用消息 toast 唯一出口：路由到自研 CCToastCenter（CCToastWindow 置顶窗口呈现），零第三方。
-    /// 一级页面（tabbar 在场）走阿奇头像气泡，其余场景走顶部胶囊
     public func pushNotification(type: NotificationType) {
         let route = toastRoute()
         switch type {
@@ -286,13 +272,7 @@ public final class AppHelper {
 
     // MARK: - 卡片展示方法
 
-    /// 在屏幕中央展示SwiftUI卡片
-    /// - Parameters:
-    ///   - view: 要展示的SwiftUI视图
-    ///   - animated: 是否使用动画效果，默认为true
-    ///   - backgroundColor: 背景颜色，默认为半透明黑色
-    ///   - tapToClose: 用户是否可以通过点击背景关闭卡片，默认为true
-    ///   - completion: 展示完成后的回调
+    /// 在独立窗口中央展示 SwiftUI 卡片（转交 TopCardPresenter）；tapToClose 为 true 时点背景即关
     @MainActor
     public func showCenterCard<Content: View>(
         view: Content,
@@ -322,10 +302,7 @@ public final class AppHelper {
         return vc
     }
 
-    /// 关闭当前展示的卡片
-    /// - Parameters:
-    ///   - animated: 是否使用动画效果，默认为true
-    ///   - completion: 关闭完成后的回调
+    /// 关闭最顶层的中央卡片（转交 TopCardPresenter）
     @MainActor
     public func dismissCenterCard(animated: Bool = true, completion: (() -> Void)? = nil) {
         TopCardPresenter.shared.dismissCard(animated: animated, completion: completion)
@@ -340,13 +317,7 @@ public final class AppHelper {
     // MARK: - 原生 UIKit pageSheet（函数式唯一出口）
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    /// 弹出原生 pageSheet（UISheetPresentationController）
-    ///
-    /// ```swift
-    /// AppHelper.shared.presentSheet(.form) { ProspectEditSheet(...) }
-    /// AppHelper.shared.presentSheet(.compact(280)) { TipComposerSheet(...) }
-    /// AppHelper.shared.presentSheet(.picker) { SquareCropPicker { ... } }
-    /// ```
+    /// 弹出原生 pageSheet（UISheetPresentationController）：presentSheet(.form) { … }，另有 .compact(280)、.picker
     @MainActor
     public func presentSheet<Content: View>(
         _ config: CCSheetConfig = .form,

@@ -1,9 +1,9 @@
-//
-//  Particles.swift
-//  Prototype-Orb
-//
-//  Created by zhaochunxiang on 2024-11-06.
-//
+/**
+ * [INPUT]: 依赖 SpriteKit 的 SKScene / SKEmitterNode 与 SwiftUI 的 SpriteView
+ * [OUTPUT]: 对外提供 ParticleScene（粒子场景）与 ParticlesView（SwiftUI 包装）
+ * [POS]: ORB 的粒子层；OrbView 按 OrbConfiguration 叠进球体
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 
 import SwiftUI
 import SpriteKit
@@ -17,14 +17,7 @@ public class ParticleScene: SKScene {
     let particleCount: Int       // 粒子数量
     let opacityRange: ClosedRange<Double>  // 粒子透明度范围
     
-    /// 初始化粒子场景
-    /// - Parameters:
-    ///   - size: 场景大小
-    ///   - color: 粒子颜色
-    ///   - speedRange: 速度范围
-    ///   - sizeRange: 大小范围
-    ///   - particleCount: 粒子数量
-    ///   - opacityRange: 透明度范围
+    /// 按场景尺寸、粒子色、速度 / 大小 / 透明度范围与粒子数建粒子场景
     public init(
         size: CGSize,
         color: UIColor,
@@ -123,8 +116,7 @@ public class ParticleScene: SKScene {
         addChild(emitter)
     }
     
-    /// 创建粒子纹理
-    /// - Returns: 返回粒子纹理
+    /// 画一张粒子纹理
     private func createParticleTexture() -> SKTexture {
         let size = CGSize(width: 8, height: 8)  // 使用较小尺寸提高性能
         let renderer = UIGraphicsImageRenderer(size: size)

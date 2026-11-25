@@ -1,4 +1,9 @@
- 
+/**
+ * [INPUT]: 依赖 SwiftUI 的 Path 与 TimelineView 式循环动画
+ * [OUTPUT]: 对外提供 WavyBlobView（六控制点平滑波浪 blob，可作背景装饰或交互反馈）
+ * [POS]: ORB 的波浪层；OrbView 按 OrbConfiguration 叠进球体
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 
 /// 波浪状的动态 Blob 视图
 /// 作者: zhaochunxiang
@@ -17,10 +22,7 @@ public struct WavyBlobView: View {
     private let color: Color        // blob 的填充颜色
     private let loopDuration: Double // 动画循环周期
  
-    /// 初始化方法
-    /// - Parameters:
-    ///   - color: blob 的颜色
-    ///   - loopDuration: 动画循环一次的时长,默认为 1 秒
+    /// color 为 blob 颜色；loopDuration 为一次动画循环的时长，缺省 1 秒
     public init(color: Color, loopDuration: Double = 1) {
         self.color = color
         self.loopDuration = loopDuration

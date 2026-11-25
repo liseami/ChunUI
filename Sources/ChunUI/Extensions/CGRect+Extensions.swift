@@ -1,9 +1,12 @@
- 
+/**
+ * [INPUT]: 依赖 CoreGraphics 的 CGRect（经 Core/CCExports 的系统框架转出）
+ * [OUTPUT]: 包内提供 CGRect.aspectFit / aspectFitWidth / aspectFitHeight（等比适配并居中）
+ * [POS]: Extensions 的几何原子；转场遮罩按它算目标框
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 
 extension CGRect {
-    /// Main  `aspectFit` method that decides whether to fit by width or height.
-    /// Used by the mask view in `SharedTransitionAnimationController`.
-    ///
+    /// 按宽或按高等比适配到 frame（SharedTransitionAnimationController 的遮罩用）
     func aspectFit(to frame: CGRect) -> CGRect {
         let ratio = width / height
         let frameRatio = frame.width / frame.height
@@ -17,8 +20,7 @@ extension CGRect {
         }
     }
 
-    // Fits the rect to the target frame's width while maintaining aspect ratio,
-    // and centers the result vertically in the target frame
+    /// 按 frame 宽度等比适配，并在 frame 内垂直居中
     func aspectFitWidth(to frame: CGRect) -> CGRect {
         let ratio = width / height
         let height = frame.width * ratio
@@ -28,8 +30,7 @@ extension CGRect {
         return CGRect(origin: origin, size: size)
     }
 
-    // Fits the rect to the target frame's height while maintaining aspect ratio,
-    // and cnters the result horizontally in the target frame
+    /// 按 frame 高度等比适配，并在 frame 内水平居中
     func aspectFitHeight(to frame: CGRect) -> CGRect {
         let ratio = height / width
         let width = frame.height * ratio

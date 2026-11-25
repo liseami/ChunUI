@@ -32,12 +32,7 @@ nonisolated public protocol Then {}
 
 nonisolated extension Then where Self: Any {
 
-  /// 使其可以在初始化和复制值类型后立即使用闭包设置属性。
-  ///
-  ///     let frame = CGRect().with {
-  ///       $0.origin.x = 10
-  ///       $0.size.width = 100
-  ///     }
+  /// 复制值、在闭包里改属性后返回：let frame = CGRect().with { $0.size.width = 100 }
   @inlinable
   nonisolated public func with(_ block: (inout Self) throws -> Void) rethrows -> Self {
     var copy = self
@@ -45,13 +40,7 @@ nonisolated extension Then where Self: Any {
     return copy
   }
 
-  /// 使其可以使用闭包执行某些操作。
-  ///
-  ///     UserDefaults.standard.do {
-  ///       $0.set("devxoul", forKey: "username")
-  ///       $0.set("devxoul@gmail.com", forKey: "email")
-  ///       $0.synchronize()
-  ///     }
+  /// 对自身执行一段闭包：UserDefaults.standard.do { $0.set("x", forKey: "k") }
   @inlinable
   nonisolated public func `do`(_ block: (Self) throws -> Void) rethrows {
     try block(self)
@@ -61,13 +50,7 @@ nonisolated extension Then where Self: Any {
 
 nonisolated extension Then where Self: AnyObject {
 
-  /// 使其可以在初始化后立即使用闭包设置属性。
-  ///
-  ///     let label = UILabel().then {
-  ///       $0.textAlignment = .center
-  ///       $0.textColor = UIColor.black
-  ///       $0.text = "Hello, World!"
-  ///     }
+  /// 初始化后立即在闭包里设属性：let label = UILabel().then { $0.text = "Hi" }
   @inlinable
   nonisolated public func then(_ block: (Self) throws -> Void) rethrows -> Self {
     try block(self)

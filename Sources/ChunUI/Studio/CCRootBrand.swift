@@ -39,8 +39,7 @@ public struct CCRootBrand<Avatar: View>: View {
     let action: () -> Void
     let avatar: Avatar
 
-    /// name：字标的无障碍名（品牌英文名）；wordmark 缺省取宿主主包的 Wordmark；
-    /// actionLabel：头像钮的无障碍名，缺省「设置」（阿奇的头像呼出侧边栏，宿主改给侧边栏名）
+    /// name 为字标的无障碍名（品牌英文名），wordmark 缺省取宿主主包的 Wordmark；actionLabel 为头像钮的无障碍名，缺省「设置」（阿奇改给侧边栏名）
     public init(name: String, wordmark: Image = Image("Wordmark"),
                 actionLabel: String = CCStudioText.settings, action: @escaping () -> Void, @ViewBuilder avatar: () -> Avatar) {
         self.name = name

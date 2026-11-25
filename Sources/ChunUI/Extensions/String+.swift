@@ -1,17 +1,13 @@
-//
-//  String+.swift
-//  YUI
-//
-//  Created by 赵翔宇 on 2025/3/1.
-//
-
- 
+/**
+ * [INPUT]: 依赖 Foundation 的 DateFormatter / TimeZone
+ * [OUTPUT]: 包内提供 String 的随机中文串、截断、UTC 转本地时间、手机号掩码；Optional<String>.or；Date.toTimeZoneString
+ * [POS]: Extensions 的字符串与时间工具；不含业务函数
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 
 extension String{
     
-    /// 生成随机中文字符串
-    /// - Parameter length: 期望的字符串长度
-    /// - Returns: 随机中文字符串，长度在传入长度的前后随机波动
+    /// 生成随机中文字符串，长度在 length 前后随机波动
     static func randomChineseString(length: Int) -> String {
         // 中文Unicode范围：0x4e00 - 0x9fff
         let chineseStart = 0x4e00
@@ -41,9 +37,7 @@ extension String{
         }
     }
 
-    /// 限制字符串长度，超出部分用 "..." 替代
-    /// - Parameter maxLength: 最大字符数
-    /// - Returns: 截断后的字符串
+    /// 截到 maxLength 个字符，超出部分以 "..." 结尾
     func limitedTo(_ maxLength: Int) -> String {
         guard count > maxLength else { return self }
         return String(prefix(maxLength)) + "..."
@@ -51,9 +45,7 @@ extension String{
 }
 
 extension Optional where Wrapped == String {
-    /// 如果字符串为nil或空，则返回or参数的值
-    /// - Parameter or: 当字符串为nil或空时返回的值
-    /// - Returns: 原字符串或or参数的值
+    /// 字符串为 nil 或空时返回 or，否则返回原串
     func or(_ or: String) -> String {
         if let self = self, !self.isEmpty {
             return self
@@ -64,9 +56,7 @@ extension Optional where Wrapped == String {
 }
 
 extension String {
-    /// 将UTC时间字符串转换为本地时区的时间字符串
-    /// - Parameter format: 输出的日期格式，默认为"yyyy-MM-dd HH:mm"
-    /// - Returns: 本地时区的时间字符串
+    /// 把 UTC 时间串转成本地时区时间串，输出格式缺省 "yyyy-MM-dd HH:mm"
     func toLocalTimeString(format: String = "yyyy-MM-dd HH:mm") -> String? {
         let formatter = DateFormatter()
         
@@ -90,8 +80,7 @@ extension String {
         return formatter.string(from: date)
     }
 
-    /// 将UTC时间字符串转换为本地时区的Date对象
-    /// - Returns: 本地时区的Date对象
+    /// 把 UTC 时间串转成本地时区的 Date
     func toLocalTimeDate() -> Date {
         let formatter = DateFormatter()
         // 尝试解析包含毫秒的格式
@@ -112,9 +101,7 @@ extension String {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 extension String {
-    /// 手机号掩码（去除国家码 + 中间掩码）
-    /// - 输入: "+8613812345678" / "8613812345678" / "13812345678"
-    /// - 输出: "138****5678"
+    /// 手机号掩码：去国家码再掩中间四位（"+8613812345678" → "138****5678"）
     func maskedPhone() -> String {
         var cleaned = self
 
@@ -138,12 +125,7 @@ extension String {
 }
 
 extension Date {
-    /// 将 Date 格式化为指定格式的字符串，支持指定时区（默认为 UTC）
-    ///
-    /// - Parameters:
-    ///   - pattern: 日期格式，默认使用 ISO 风格的 `"yyyy-MM-dd'T'HH:mm:ss.SSSSSS"`
-    ///   - timeZone: 时区，默认是 UTC（格林威治时间）
-    /// - Returns: 格式化后的字符串
+    /// 按 pattern 把 Date 格式化为字符串，缺省 ISO 风格微秒格式与 UTC 时区
     func toTimeZoneString(
         _ pattern: String = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS",
         timeZone: TimeZone = TimeZone(secondsFromGMT: 0)!

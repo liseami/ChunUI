@@ -271,8 +271,7 @@ public struct CCToastView: View {
         )
     }
 
-    /// 叠态：上探 peek + 补回缩掉的高度（顶对齐锚点下，i×(peek + H×步进) 让每层底边恰露一条边）
-    /// 展开态：前面各张本高度 + 间距累加
+    /// 叠态上探 peek 并补回缩掉的高度（每层底边恰露一条边）；展开态按前面各张本高度加间距累加
     private func offsetY(index: Int, stack: [CCToastCenter.Toast]) -> CGFloat {
         guard index > 0 else { return 0 }
         if center.expanded {

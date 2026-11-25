@@ -145,8 +145,7 @@ nonisolated public enum CCSmoothCorner {
         Array(points(k, vertex: vertex, u: u, v: v).keys[4...7])
     }
 
-    /// 一角的三段三次（爬升贝塞尔 · 圆弧的三次近似 · 回落贝塞尔），每段四个控制点、首段起于进角切点、末段止于出角切点；
-    /// 圆弧的控制柄 r · 4/3 · tan(θ/4) 沿两端切线——与 Android 的 CCSmoothCorner.cubics 同一组数。群聊气泡在尾巴那只角上按它找凹口、截断续画
+    /// 一角三段三次（爬升 · 圆弧近似 · 回落，每段四点，起止于进出角切点），弧柄 r·4/3·tan(θ/4) 与 Android CCSmoothCorner.cubics 同数；群聊气泡按它在尾角找凹口
     static func cubics(_ k: Corner, vertex: CGPoint, u: CGVector, v: CGVector) -> [[CGPoint]] {
         guard k.radius > 0 else { return [] }
         let q = points(k, vertex: vertex, u: u, v: v)

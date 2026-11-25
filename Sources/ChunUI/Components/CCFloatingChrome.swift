@@ -90,8 +90,7 @@ private struct CCFloatingPageHeaderModifier<Header: View>: ViewModifier {
 }
 
 extension View {
-    /// 页面 chrome 范式：页头浮在渐变模糊上，内容（ScrollView）从其下自由滚过；
-    /// 底部对偶承托由 MainView 全局 CCChromeBacking(edge: .bottom) 提供，页面无需自理
+    /// 页头浮在渐变模糊上、内容从其下滚过；底部承托由宿主全局 CCChromeBacking(edge: .bottom) 提供，页面不自理
     public func ccFloatingPageHeader<Header: View>(@ViewBuilder header: @escaping () -> Header) -> some View {
         modifier(CCFloatingPageHeaderModifier(header: header))
     }

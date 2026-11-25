@@ -1,14 +1,10 @@
-//
-//  BackgroundView.swift
-//  DreamPaper
-//
-//  Created by zhaochunxiang on 2024-11-06.
-//  Copyright © 2024 zhaochunxiang. All rights reserved.
-//
+/**
+ * [INPUT]: 依赖 SwiftUI 的 Shape 与动画
+ * [OUTPUT]: 对外提供 RotationDirection 与 RotatingGlowView（旋转发光环）
+ * [POS]: ORB 的发光层；OrbView 按 OrbConfiguration 叠进球体
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 
- 
-
-/// 旋转方向枚举
 public enum RotationDirection {
     /// 顺时针
     case clockwise
@@ -42,11 +38,7 @@ public struct RotatingGlowView: View {
     
     // MARK: - 初始化方法
     
-    /// 创建旋转发光视图
-    /// - Parameters:
-    ///   - color: 发光颜色
-    ///   - rotationSpeed: 旋转速度，默认30圈/分钟
-    ///   - direction: 旋转方向
+    /// 建旋转发光视图：color 为发光色，rotationSpeed 缺省 30 圈/分钟，direction 为旋转方向
     public init(color: Color,
          rotationSpeed: Double = 30,
          direction: RotationDirection)

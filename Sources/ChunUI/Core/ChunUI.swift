@@ -9,17 +9,7 @@ import SwiftUI
 
 public enum ChunUI {
 
-    /// 一行换肤：传入自己的语义调色板，全组件族即刻生效。
-    ///
-    /// ```swift
-    /// // App 启动时（如 AppDelegate.didFinishLaunching）
-    /// ChunUI.configure(colors: CCColors(
-    ///     primary: .hex("007aff"),   // 你的品牌色
-    ///     ...                        // 其余语义色，或从 .default 改造
-    /// ))
-    /// ```
-    ///
-    /// 不调用则使用 `.default`（Zinner 同款极致黑白粉）。
+    /// 一行换肤：App 启动时传入语义调色板，全组件族即刻生效；不调用即 .default（Zinner 黑白粉）
     public static func configure(
         colors: CCColors = .default,
         strings: CCStrings = .init()
