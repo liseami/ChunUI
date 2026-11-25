@@ -1,5 +1,5 @@
 /**
- * [INPUT]: URL (String 或 URL 类型)、CCDesigin.GlassIconButton、PikaIcon.Name.close
+ * [INPUT]: URL (String 或 URL 类型)、CCDesigin.GlassIconButton、PikaIcon.Name.close、Presentation 的 CCNav.present（分享面板呈现出口）
  * [OUTPUT]: 应用内浏览器视图（顶栏左上 regular 大玻璃关闭，顶缘忽略安全区）；CCWebView + WebViewState 亦可被宿主单独内嵌
  * [POS]: DesignSystem/Compents - 通用 WebView 封装；底栏工具条圆角矩形（禁胶囊）
  *
@@ -148,9 +148,9 @@ public struct InAppBrowser: View {
               let root = scene.windows.first?.rootViewController else { return }
 
         if let presented = root.presentedViewController {
-            presented.dismiss(animated: true) { root.present(activityVC, animated: true) }
+            presented.dismiss(animated: true) { CCNav.present(activityVC, from: root, animated: true) }
         } else {
-            root.present(activityVC, animated: true)
+            CCNav.present(activityVC, from: root, animated: true)
         }
 
         AppHelper.shared.mada(.soft)

@@ -1,6 +1,6 @@
 /**
  * [INPUT]: 依赖本目录 CCFeedbackInbox.shared.service（inviteShareText · inviteShareURL）、CCFBPrimaryButton、CCFBTokens / CCFBFont / CCFBText、Theme 的 CCFontFamily（<24h 统计字）；Studio 的 CCStudio（storeURL，无服务时兜底）、
- *          Presentation 的 AppHelper（topMostViewController 呈现系统分享、mada 触感）、Icons 的 PikaIcon check-tick-single、Color.cc（foreground · mutedForeground · background · success）
+ *          Presentation 的 AppHelper（topMostViewController 取锚点、mada 触感）与 CCNav.present（呈现系统分享）、Icons 的 PikaIcon check-tick-single、Color.cc（foreground · mutedForeground · background · success）
  * [OUTPUT]: 对内提供 CCFeedbackInvitePage（意见箱「邀请」段：进化路径插图 · 标题 · 两句主张 · <24h 承诺 · 分享按钮）
  * [POS]: Studio/Feedback 的邀请页，逐值移植胃之书 FeedbackInviteView：单色细线插图只在终点着一点成功绿，入场一次描线、节点依次长出（减弱动效直接成图）。
  *        分享走系统分享表，从最上层控制器呈现（本页在 sheet 里），带宿主给的一句话与本 App 的链接；不碰网络与会话
@@ -62,7 +62,8 @@ struct CCFeedbackInvitePage: View {
         let text = service?.inviteShareText ?? ""
         let items: [Any] = [text, service?.inviteShareURL ?? CCStudio.storeURL].filter { !(($0 as? String)?.isEmpty ?? false) }
         let sheet = UIActivityViewController(activityItems: items, applicationActivities: nil)
-        AppHelper.shared.topMostViewController()?.present(sheet, animated: true)
+        guard let presenter = AppHelper.shared.topMostViewController() else { return }
+        CCNav.present(sheet, from: presenter, animated: true)
     }
 }
 

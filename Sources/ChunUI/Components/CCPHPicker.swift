@@ -1,5 +1,5 @@
 /**
- * [INPUT]: 依赖 PhotosUI PHPickerViewController、UniformTypeIdentifiers、PickedMedia/PickedVideoFile（R2Uploader）、CCPresentationAnchor、UploadProgressCenter
+ * [INPUT]: 依赖 PhotosUI PHPickerViewController、UniformTypeIdentifiers、PickedMedia/PickedVideoFile（R2Uploader）、CCPresentationAnchor、CCNav.present（呈现出口）、UploadProgressCenter
  * [OUTPUT]: 对外提供 MediaPickLimit.maxPerSession（图+视频合计 6）与 MainViewModel.presentPHPicker——命令式系统相册多选，回调 [PickedMedia]
  * [POS]: DesignSystem/Compents 的相册选取唯一命令式出口；禁止业务页 .photosPicker / PhotosPicker 视图挂载；选完立刻上传的路径 showsUploadToast=true，点确认即出进度胶囊，不等 iCloud 解码
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
@@ -50,7 +50,7 @@ extension AppHelper {
                 .OBJC_ASSOCIATION_RETAIN_NONATOMIC
             )
             guard let presenter = CCPresentationAnchor.topmost() else { return }
-            presenter.present(picker, animated: true)
+            CCNav.present(picker, from: presenter, animated: true)
         }
     }
 }

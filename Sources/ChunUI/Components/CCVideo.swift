@@ -4,7 +4,7 @@
 //
 
 /**
- * [INPUT]: 依赖 AVKit/AVFoundation（AVAssetImageGenerator 取帧、AVPlayer 播放）、UIKit（锚点转场源 UIImageView + 全屏查看器）与 Color.cc 设计令牌
+ * [INPUT]: 依赖 AVKit/AVFoundation（AVAssetImageGenerator 取帧、AVPlayer 播放）、UIKit（锚点转场源 UIImageView + 全屏查看器）、Color.cc 设计令牌与 Presentation 的 CCNav.present（查看器呈现出口）
  * [OUTPUT]: 对外提供 CCVideoThumb（真实 UIImageView 首帧缩略 + 播放角标，点按锚点缩放打开）与 CCVideoViewerController（图片查看器同款手感：Laper 曲线锚点放大 + 跟手拖拽关闭回落锚点）
  * [POS]: DesignSystem/Compents 的视频呈现唯一系统——媒体数组图视频混存（.mp4/.mov 扩展名区分），与 Lantern 图片查看器同一转场语言；playable=false 时关闭 UIView 命中，把点击还给外层编辑选择
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
@@ -183,7 +183,7 @@ public final class CCVideoViewerController: UIViewController {
             thumbnail: sourceView.image
         )
         viewer.modalPresentationStyle = .overFullScreen
-        top.present(viewer, animated: false)
+        CCNav.present(viewer, from: top, animated: false)
     }
 
     private init(url: URL, sourceView: UIImageView, anchorFrame: CGRect, anchorRadius: CGFloat, thumbnail: UIImage?) {

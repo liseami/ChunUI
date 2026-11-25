@@ -1,6 +1,6 @@
 /**
  * [INPUT]: 依赖 StoreKit 的 SKStoreProductViewController、UIKit 的 UIActivityViewController 与 UIApplication.open、
- *          Presentation 的 AppHelper.topMostViewController、Studio 的 CCLanguage（取词语言）与包内 Studio.xcstrings
+ *          Presentation 的 AppHelper.topMostViewController 与 CCNav.present（呈现出口）、Studio 的 CCLanguage（取词语言）与包内 Studio.xcstrings
  * [OUTPUT]: 对外提供 CCStudio（本 App 的工作室身份：App Store id、分享文案、作品目录地址、外链出口；评分与分享动作）、
  *           CCAppStore（应用内 App Store 页）、CCStudioText（工作室通用文案，二十种语言随包）
  * [POS]: Studio 层的门面。四个 App 启动时各 configure 一次，设置页的信息组、更多组、其他作品组、语言与外观页都只读这里；
@@ -58,7 +58,7 @@ public enum CCStudio {
         let items: [Any] = [shareText(), shareURL ?? storeURL].filter { !(($0 as? String)?.isEmpty ?? false) }
         let sheet = UIActivityViewController(activityItems: items, applicationActivities: nil)
         sheet.popoverPresentationController?.sourceView = presenter.view
-        presenter.present(sheet, animated: true)
+        CCNav.present(sheet, from: presenter, animated: true)
     }
 }
 
@@ -77,7 +77,7 @@ public enum CCAppStore {
         }
         let store = SKStoreProductViewController()
         store.delegate = closer
-        presenter.present(store, animated: true)
+        CCNav.present(store, from: presenter, animated: true)
         store.loadProduct(withParameters: [SKStoreProductParameterITunesItemIdentifier: NSNumber(value: id)]) { loaded, _ in
             guard !loaded else { return }
             Task { @MainActor in
